@@ -25,47 +25,83 @@
           <img src="https://4noy.github.io/courses/introduction-ctf-lycee/challenge-data/quicer.jpg" style="width: 20%;">
           <p>Le flag est son nom de famille en minuscule.</p>
           <input type="text" id="flag1" placeholder="Entrez le flag">
-          <button onclick="checkFlag('flag1', 'result1', 'votre_hash_correcte_1')">Flag!</button>
+          <button onclick="checkFlag('flag1', 'result1', '26010c5a26090f38d288cd8a00c38b41548a3e70f77ce3ecd487d819986b2b28')">Flag!</button>
           <p class="result" id="result1"></p>
         </div>
         
         <div class="challenge" id="challenge2">
           <a href="https://sourcing.games/game-1/game-1-h4xgm/"><h2>OSINT/Game 1-03</h2></a>
-          <p>Voici l'énoncé de votre deuxième challenge...</p>
+          <p>Trouvez la date à laquelle cette URL (raccourcie) a été créée.</p>
+          <a href="https://bit.ly/mylnkbio">https://bit.ly/mylnkbio</a>
+          <p>Le mot de passe est le mois en minuscule et le jour (par exemple, "janvier" et le jour "4" => janvier-4).</p>
           <input type="text" id="flag2" placeholder="Entrez le flag">
-          <button onclick="checkFlag('flag2', 'result2', 'votre_hash_correcte_2')">Flag!</button>
+          <button onclick="checkFlag('flag2', 'result2', 'c11a610981a5251aea302e862267c2b389b5ecff233708881f5beabdf614aa1b')">Flag!</button>
           <p class="result" id="result2"></p>
         </div>
         
         <div class="challenge" id="challenge3">
           <a href="http://natas5.natas.labs.overthewire.org/"><h2>Web/Natas5</h2></a>
-          <p>Voici l'énoncé de votre troisième challenge...</p>
+          <p>Accédez à la <a href="http://natas5.natas.labs.overthewire.org/">page</a> en contournant les sécurités.</p>
+          <p>
+            Données pour accéder au challenge:
+            <br>
+            Utilisateur: natas5
+            <br>
+            Mot de Passe: Z0NsrtIkJoKALBCLi5eqFfcRN82Au2oD
+          </p>
           <input type="text" id="flag3" placeholder="Entrez le flag">
-          <button onclick="checkFlag('flag3', 'result3', 'votre_hash_correcte_3')">Flag!</button>
+          <button onclick="checkFlag('flag3', 'result3', '51b1463f66df7462b15056f4dc9d6a5d9a43e676b5e793e36578580487b69377')">Flag!</button>
           <p class="result" id="result3"></p>
         </div>
         
         <div class="challenge" id="challenge4">
           <a href="http://natas4.natas.labs.overthewire.org/"><h2>Web/Natas4</h2></a>
-          <p>Voici l'énoncé de votre quatrième challenge...</p>
+          <p>Accédez à la <a href="http://natas4.natas.labs.overthewire.org/">page</a> en contournant les sécurités.</p>
+          <p>
+            Données pour accéder au challenge:
+            <br>
+            Utilisateur: natas4
+            <br>
+            Mot de Passe: tKOcJIbzM4lTs8hbCmzn5Zr4434fGZQm
+          </p>
           <input type="text" id="flag4" placeholder="Entrez le flag">
-          <button onclick="checkFlag('flag4', 'result4', 'votre_hash_correcte_4')">Flag!</button>
+          <button onclick="checkFlag('flag4', 'result4', '2b84da5ec8f1973fef408f285613191ba5c9898185febc0560f004960471f0a2')">Flag!</button>
           <p class="result" id="result4"></p>
         </div>
         
         <div class="challenge" id="challenge5">
-          <a href="https://play.picoctf.org/practice/challenge/121?category=3&page=1"><h2>Crypto/13</h2></a>
-          <p>Voici l'énoncé de votre cinquième challenge...</p>
+          <a href="https://play.picoctf.org/practice/challenge/62?category=2&page=1"><h2>Crypto/13</h2></a>
+          <p>La cryptographie peut être facile, savez-vous ce qu'est le ROT13 ?</p>
+          <p class="code">cvpbPGS{abg_gbb_onq_bs_n_ceboyrz}</p>
           <input type="text" id="flag5" placeholder="Entrez le flag">
-          <button onclick="checkFlag('flag5', 'result5', 'votre_hash_correcte_5')">Flag!</button>
+          <button onclick="checkFlag('flag5', 'result5', '1105ca72602e35e8c9b011366fc8dcb04450a952892bf971b65d7316ff056623')">Flag!</button>
           <p class="result" id="result5"></p>
         </div>
         
         <div class="challenge" id="challenge6">
           <a href="https://cryptohack.org/challenges/general/"><h2>Crypto/XOR Properties</h2></a>
-          <p>Voici l'énoncé de votre sixième challenge...</p>
+          <p>
+            Il y a quatre principales propriétés que nous devrions considérer lorsque nous résolvons des défis en utilisant l'opérateur XOR :
+          </p>
+          <p class="code">
+            Commutative : A ⊕ B = B ⊕ A
+            Associative : A ⊕ (B ⊕ C) = (A ⊕ B) ⊕ C
+            Identité : A ⊕ 0 = A
+            Auto-inverse : A ⊕ A = 0
+          </p>
+          <p>
+            Décortiquons cela. Commutative signifie que l'ordre des opérations XOR n'est pas important. Associative signifie qu'une chaîne d'opérations peut être effectuée sans ordre (nous n'avons pas besoin de nous soucier des parenthèses). L'identité est 0, donc XOR avec 0 "ne fait rien", et enfin quelque chose XOR'd avec lui-même retourne zéro.
+            
+            Mettez cela en pratique ! Ci-dessous se trouvent une série de sorties où trois clés aléatoires ont été XOR'ées ensemble et avec le drapeau. Utilisez les propriétés ci-dessus pour annuler le chiffrement dans la dernière ligne afin d'obtenir le drapeau.
+          </p>
+          <p class="code">
+            KEY1 = a6c8b6733c9b22de7bc0253266a3867df55acde8635e19c73313
+            KEY2 ^ KEY1 = 37dcb292030faa90d07eec17e3b1c6d8daf94c35d4c9191a5e1e
+            KEY2 ^ KEY3 = c1545756687e7573db23aa1c3452a098b71a7fbf0fddddde5fc1
+            FLAG ^ KEY1 ^ KEY3 ^ KEY2 = 04ee9855208a2cd59091d04767ae47963170d1660df7f56f5faf
+          </p>
           <input type="text" id="flag6" placeholder="Entrez le flag">
-          <button onclick="checkFlag('flag6', 'result6', 'votre_hash_correcte_6')">Flag!</button>
+          <button onclick="checkFlag('flag6', 'result6', '90d5a0ce78165291e1b4ed4da92dc58d83256cb874798cb3c47c5c683309fa47')">Flag!</button>
           <p class="result" id="result6"></p>
         </div>
         
