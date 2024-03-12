@@ -22,15 +22,13 @@ async function checkFlag(inputId, resultId, correctHash) {
   var resultElement = document.getElementById(resultId);
   
   try {
-    // Hasher l'entrée utilisateur avec SHA-256
     var hashedInput = await hash(input);
 
-    // Vérifier si le hash de l'entrée correspond au hash correct
     if (hashedInput === correctHash) {
-      resultElement.textContent = "Correct ! Vous avez trouvé le flag.";
+      resultElement.textContent = "Correct !";
       resultElement.style.color = "green";
     } else {
-      resultElement.textContent = "Désolé, ce n'est pas le bon flag.";
+      resultElement.textContent = "Incorrect :'(";
       resultElement.style.color = "red";
     }
   } catch (error) {

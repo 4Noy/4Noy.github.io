@@ -110,6 +110,15 @@ div.container {
   justify-content: center;
   background-color: #292929;
 }
+/* Challenges part */
+.ctf-responses {
+  padding-left: 2%;
+  color: white;
+}
+
+.challenge {
+  padding-bottom: 2%;
+}
 
 /* nav animation */
 @import url('https://fonts.googleapis.com/css?family=Titillium+Web:400,600');
