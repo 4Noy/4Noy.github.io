@@ -34,7 +34,7 @@ header {
   color: #fff;
   padding: 10px;
   text-align: center;
-  margin-top: 0px;
+  margin-top: 55px;
 }
 
 footer {
@@ -255,7 +255,7 @@ nav {
   padding: 7px 0;
   background: transparent;
   transition: border-color 0.2s;
-  margin-left: 2%;
+  margin-left: 4%;
 }
 
 .form__field::placeholder {
@@ -301,5 +301,5 @@ nav {
 }
 
 label {
-  margin-left: 2%;
+  margin-left: 4%;
 }
