@@ -5,9 +5,8 @@ fetch('https://4noy.github.io/static/header.html')
         })
         .catch(error => console.error('Error fetching HTML:', error));
 
-function checkFlag(inputId, resultId, hashId, correctHash) {
+function checkFlag(inputId, resultId, correctHash) {
   var input = document.getElementById(inputId).value;
-  var hash = document.getElementById(hashId).textContent;
   var resultElement = document.getElementById(resultId);
   
   // Hasher l'entrée utilisateur avec SHA-256

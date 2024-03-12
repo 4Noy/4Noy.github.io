@@ -6,6 +6,7 @@
     <title>Noy.</title>
     <link rel="stylesheet" href="https://4noy.github.io/style.css">
     <link rel="icon" href="https://4noy.github.io/icon.ico" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
 </head>
 <body>
     <div class="common-section" id="common-content">
@@ -22,22 +23,16 @@
         <div class="challenge" id="challenge1">
           <h2>Challenge 1</h2>
           <p>Voici l'énoncé de votre premier challenge...</p>
-          <form onsubmit="checkFlag('flag1', 'challenge1', 'hash1', 'votre_hash_correcte'); return false;">
-            <label for="flag1">Entrez le flag :</label>
-            <input type="text" id="flag1" name="flag1">
-            <input type="submit" value="Vérifier">
-          </form>
+          <input type="text" id="flag1" placeholder="Entrez le flag">
+          <button onclick="checkFlag('flag1', 'result1', 'votre_hash_correcte')">Vérifier</button>
           <p class="result" id="result1"></p>
         </div>
         
         <div class="challenge" id="challenge2">
           <h2>Challenge 2</h2>
           <p>Voici l'énoncé de votre deuxième challenge...</p>
-          <form onsubmit="checkFlag('flag2', 'challenge2', 'hash2', 'votre_autre_hash_correcte'); return false;">
-            <label for="flag2">Entrez le flag :</label>
-            <input type="text" id="flag2" name="flag2">
-            <input type="submit" value="Vérifier">
-          </form>
+          <input type="text" id="flag2" placeholder="Entrez le flag">
+          <button onclick="checkFlag('flag2', 'result2', 'votre_autre_hash_correcte')">Vérifier</button>
           <p class="result" id="result2"></p>
         </div>
       </div>
