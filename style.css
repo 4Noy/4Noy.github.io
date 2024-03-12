@@ -34,7 +34,7 @@ header {
   color: #fff;
   padding: 10px;
   text-align: center;
-  padding-top: 3.5%;
+  margin-top: 50px;
 }
 
 footer {
@@ -241,4 +241,5 @@ button {
 nav {
   width: 100%;
   position: fixed;
+  top: 0;
 }
