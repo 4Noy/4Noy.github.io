@@ -18,6 +18,29 @@
                 Introduction CTF
               </div>
       </div>
+      <div class="ctf-responses">
+        <div class="challenge" id="challenge1">
+          <h2>Challenge 1</h2>
+          <p>Voici l'énoncé de votre premier challenge...</p>
+          <form onsubmit="checkFlag('flag1', 'challenge1', 'hash1', 'votre_hash_correcte'); return false;">
+            <label for="flag1">Entrez le flag :</label>
+            <input type="text" id="flag1" name="flag1">
+            <input type="submit" value="Vérifier">
+          </form>
+          <p class="result" id="result1"></p>
+        </div>
+        
+        <div class="challenge" id="challenge2">
+          <h2>Challenge 2</h2>
+          <p>Voici l'énoncé de votre deuxième challenge...</p>
+          <form onsubmit="checkFlag('flag2', 'challenge2', 'hash2', 'votre_autre_hash_correcte'); return false;">
+            <label for="flag2">Entrez le flag :</label>
+            <input type="text" id="flag2" name="flag2">
+            <input type="submit" value="Vérifier">
+          </form>
+          <p class="result" id="result2"></p>
+        </div>
+      </div>
     </div>
 
   <script src="https://4noy.github.io/script.js"></script>
