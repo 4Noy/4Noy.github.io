@@ -22,7 +22,7 @@
         <div class="challenge" id="challenge1">
           <a href="https://sourcing.games/game-1/game-1-csa7a/"><h2>OSINT/Game 1-02</h2></a>
           <p>Qui est cette personne et quel est son nom ? </p>
-          <img src="https://4noy.github.io/courses/introduction-ctf-lycee/challenges-data/quicer.jpg" style="width: 10%;">
+          <img src="https://4noy.github.io/courses/introduction-ctf-lycee/challenges-data/quicer.jpg" style="width: 10%; margin-left: 2%;">
           <p>Le flag est son nom de famille en minuscule.</p>
           <input type="text" id="flag1" placeholder="Entrez le flag">
           <button onclick="checkFlag('flag1', 'result1', '26010c5a26090f38d288cd8a00c38b41548a3e70f77ce3ecd487d819986b2b28')">Flag!</button>
@@ -89,9 +89,14 @@
             Auto-inverse : A ⊕ A = 0
           </p>
           <p>
-            Décortiquons cela. Commutative signifie que l'ordre des opérations XOR n'est pas important. Associative signifie qu'une chaîne d'opérations peut être effectuée sans ordre (nous n'avons pas besoin de nous soucier des parenthèses). L'identité est 0, donc XOR avec 0 "ne fait rien", et enfin quelque chose XOR'd avec lui-même retourne zéro.
-            
-            Mettez cela en pratique ! Ci-dessous se trouvent une série de sorties où trois clés aléatoires ont été XOR'ées ensemble et avec le drapeau. Utilisez les propriétés ci-dessus pour annuler le chiffrement dans la dernière ligne afin d'obtenir le drapeau.
+            Décortiquons cela. Commutative signifie que l'ordre des opérations XOR n'est pas important.
+            <br>
+            Associative signifie qu'une chaîne d'opérations peut être effectuée sans ordre (nous n'avons pas besoin de nous soucier des parenthèses).
+            <br>
+            L'identité est 0, donc XOR avec 0 "ne fait rien", et enfin quelque chose XOR'd avec lui-même retourne zéro.
+            <br>
+            <br>
+            Mettez donc ces connaissances en pratiques et trouvez le flag :)
           </p>
           <p class="code">
             KEY1 = a6c8b6733c9b22de7bc0253266a3867df55acde8635e19c73313
