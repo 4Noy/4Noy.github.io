@@ -17,17 +17,13 @@ let hashes = [
   "votre_hash_correcte_9"
 ];
 
-for (let i = 1; i <= 9; i++) {
-  let flagId = "flag" + i;
-  let resultId = "result" + i;
-  let hash = hashes[i - 1];
 
-  document.getElementById(flagId).addEventListener("keyup", function(event) {
-    handleEnterKeyPress(event, flagId, resultId, hash);
-  });
+
+function handleEnterKeyPress(event, inputId, resultId, correctHash) {
+  if (event.keyCode === 13) {
+    checkFlag(inputId, resultId, correctHash);
+  }
 }
-
-
 
 
 function hash(string) {
@@ -60,3 +56,12 @@ async function checkFlag(inputId, resultId, correctHash) {
   }
 }
 
+for (let i = 1; i <= 9; i++) {
+  let flagId = "flag" + i;
+  let resultId = "result" + i;
+  let hash = hashes[i - 1];
+
+  document.getElementById(flagId).addEventListener("keyup", function(event) {
+    handleEnterKeyPress(event, flagId, resultId, hash);
+  });
+}

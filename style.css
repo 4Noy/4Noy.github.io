@@ -160,13 +160,6 @@ p.code {
   color: #666;
 }
 
-input{
-  margin-left: 2%;
-}
-
-button {
-  margin-left: 2%;
-}
 
 /* nav animation */
 @import url('https://fonts.googleapis.com/css?family=Titillium+Web:400,600');
@@ -262,6 +255,7 @@ nav {
   padding: 7px 0;
   background: transparent;
   transition: border-color 0.2s;
+  margin-left: 2%;
 }
 
 .form__field::placeholder {
@@ -304,4 +298,8 @@ nav {
 /* reset input */
 .form__field:required, .form__field:invalid {
   box-shadow: none;
+}
+
+label {
+  margin-left: 2%;
 }
