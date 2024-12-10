@@ -1,0 +1,32 @@
+<h2 id="cryptography">Cryptography</h2>
+<p>Math knowledge is nice for this section</p>
+<hr>
+<h3 id="mod-26">Mod 26</h3>
+<p>For this challenge we get this encrypted flag : <code>cvpbPGS{arkg_gvzr_V&#39;yy_gel_2_ebhaqf_bs_ebg13_GYpXOHqX}</code> and the challenge talk about ROT13, so let&#39;s write a little python algorithm that decrypt this flag!</p>
+<pre><code class="lang-python">def rot13(<span class="hljs-keyword">s</span>):
+    result = <span class="hljs-string">""</span>
+    <span class="hljs-keyword">for</span> v in <span class="hljs-keyword">s</span>:
+        c = <span class="hljs-keyword">ord</span>(v)
+        <span class="hljs-keyword">if</span> c &gt;= <span class="hljs-keyword">ord</span>(<span class="hljs-string">'a'</span>) <span class="hljs-keyword">and</span> c &lt;= <span class="hljs-keyword">ord</span>(<span class="hljs-string">'z'</span>):
+            <span class="hljs-keyword">if</span> c &gt; <span class="hljs-keyword">ord</span>(<span class="hljs-string">'m'</span>):
+                c -= <span class="hljs-number">13</span>
+            <span class="hljs-keyword">else</span>:
+                c += <span class="hljs-number">13</span>
+        elif c &gt;= <span class="hljs-keyword">ord</span>(<span class="hljs-string">'A'</span>) <span class="hljs-keyword">and</span> c &lt;= <span class="hljs-keyword">ord</span>(<span class="hljs-string">'Z'</span>):
+            <span class="hljs-keyword">if</span> c &gt; <span class="hljs-keyword">ord</span>(<span class="hljs-string">'M'</span>):
+                c -= <span class="hljs-number">13</span>
+            <span class="hljs-keyword">else</span>:
+                c += <span class="hljs-number">13</span>
+        result += <span class="hljs-keyword">chr</span>(c)
+    <span class="hljs-keyword">return</span> result
+
+<span class="hljs-comment"># The encrypted flag is in the "flag.enc.txt" file</span>
+with <span class="hljs-keyword">open</span>(<span class="hljs-string">'flag.enc.txt'</span>, <span class="hljs-string">'r'</span>) as f:
+    flag_enc = f.read()
+flag = rot13(flag_enc)
+<span class="hljs-keyword">print</span>(<span class="hljs-string">"The flag is :"</span>, flag)
+</code></pre>
+<p>And we can now run the script and solve the challenge!</p>
+<p><em>More information about <a href="https://en.wikipedia.org/wiki/ROT13">ROT13</a></em></p>
+<hr>
+

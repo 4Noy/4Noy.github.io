@@ -1,0 +1,457 @@
+<h2 id="reverse-engineering">Reverse Engineering</h2>
+<p>Looks Nice!</p>
+<hr>
+<p>In this challenge we only got one file <code>keygenme-trial.py</code> which is a little application that calculate things that we don&#39;t need to know about because the interesting part in this script is how to <strong>activate the license</strong>.</p>
+<p>The variables used to verify the license are these:</p>
+<pre><code class="lang-python"><span class="hljs-attr">username_trial</span> = <span class="hljs-string">"GOUGH"</span>
+<span class="hljs-attr">bUsername_trial</span> = b<span class="hljs-string">"GOUGH"</span>
+
+<span class="hljs-attr">key_part_static1_trial</span> = <span class="hljs-string">"picoCTF{1n_7h3_|&lt;3y_of_"</span>
+<span class="hljs-attr">key_part_dynamic1_trial</span> = <span class="hljs-string">"xxxxxxxx"</span>
+<span class="hljs-attr">key_part_static2_trial</span> = <span class="hljs-string">"}"</span>
+<span class="hljs-attr">key_full_template_trial</span> = key_part_static1_trial + key_part_dynamic1_trial + key_part_static2_trial
+</code></pre>
+<p>Here, we can see that there is the beginning of the flag but there is a <strong>part with &#39;x&#39; that we are gonna try to find</strong>.</p>
+<p>When you try to activate a licence, it first call this function <code>enter_license</code>.</p>
+<pre><code class="lang-python">def enter_license():
+    user_key = input(<span class="hljs-string">"\nEnter your license key: "</span>)
+    user_key = user_key.strip()
+
+    global bUsername_trial
+
+    <span class="hljs-keyword">if</span> check_key(user_key, bUsername_trial):
+        decrypt_full_version(user_key)
+    <span class="hljs-keyword">else</span>:
+        print(<span class="hljs-string">"\nKey is NOT VALID. Check your data.py entry.\n\n"</span>)
+</code></pre>
+<p>So this wait for an input of the user, <code>strip</code> it and now call <code>check_key</code>.</p>
+<pre><code class="lang-python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">check_key</span><span class="hljs-params">(key, username_trial)</span>:</span>
+    <span class="hljs-keyword">global</span> key_full_template_trial
+
+    <span class="hljs-keyword">if</span> len(key) != len(key_full_template_trial):
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">False</span>
+    <span class="hljs-keyword">else</span>:
+        <span class="hljs-comment"># Verify if the start of our input is "picoCTF{1n_7h3_|&lt;3y_of_"</span>
+        i = <span class="hljs-number">0</span>
+        <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> key_part_static1_trial:
+            <span class="hljs-keyword">if</span> key[i] != c:
+                <span class="hljs-keyword">return</span> <span class="hljs-keyword">False</span>
+            i += <span class="hljs-number">1</span>
+
+        <span class="hljs-comment"># ... (Some other code that I'm gonna explain later)         </span>
+
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">True</span>
+</code></pre>
+<p>With this function, we first notice that our input (<code>key</code>) need to have a size equal to the size of <code>key_full_template_trial</code> which is the flag but with unknown part (the <code>key_part_dynamic1_trial</code>, all the &#39;x&#39;).</p>
+<p>Then the rest of the code here is verify if the start of our input is the string <code>key_part_static1_trial</code> which is &quot;picoCTF{1n<em>7h3</em>|&lt;3y<em>of</em>&quot;.</p>
+<p>The rest of this function is gonna help us find what the rest of our input needs to be.</p>
+<pre><code class="lang-python">  def check_key(<span class="hljs-keyword">key</span>, username_trial):
+
+        <span class="hljs-meta"># ...</span>
+
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">key</span>[i] != hashlib.sha256(username_trial).hexdigest()[<span class="hljs-number">4</span>]:
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span>
+        <span class="hljs-keyword">else</span>:
+            i += <span class="hljs-number">1</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">key</span>[i] != hashlib.sha256(username_trial).hexdigest()[<span class="hljs-number">5</span>]:
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span>
+        <span class="hljs-keyword">else</span>:
+            i += <span class="hljs-number">1</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">key</span>[i] != hashlib.sha256(username_trial).hexdigest()[<span class="hljs-number">3</span>]:
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span>
+        <span class="hljs-keyword">else</span>:
+            i += <span class="hljs-number">1</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">key</span>[i] != hashlib.sha256(username_trial).hexdigest()[<span class="hljs-number">6</span>]:
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span>
+        <span class="hljs-keyword">else</span>:
+            i += <span class="hljs-number">1</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">key</span>[i] != hashlib.sha256(username_trial).hexdigest()[<span class="hljs-number">2</span>]:
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span>
+        <span class="hljs-keyword">else</span>:
+            i += <span class="hljs-number">1</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">key</span>[i] != hashlib.sha256(username_trial).hexdigest()[<span class="hljs-number">7</span>]:
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span>
+        <span class="hljs-keyword">else</span>:
+            i += <span class="hljs-number">1</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">key</span>[i] != hashlib.sha256(username_trial).hexdigest()[<span class="hljs-number">1</span>]:
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span>
+        <span class="hljs-keyword">else</span>:
+            i += <span class="hljs-number">1</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">key</span>[i] != hashlib.sha256(username_trial).hexdigest()[<span class="hljs-number">8</span>]:
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span>
+
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span>
+</code></pre>
+<p>We know that the <code>i</code> variable is now equal to the lenght of <code>key_part_static1_trial</code> which is the rest of our string after &quot;picoCTF{1n<em>7h3</em>|&lt;3y<em>of</em>&quot;.</p>
+<p>So this part check things on the section of the flag that contain &#39;x&#39;.</p>
+<p>Each <code>if</code> statement is similar to the other one, it verify if the next character is equal to one precise character of the sha256 of <code>username_trial</code> which is <code>bUsername_trial</code> (the binary string &quot;GOUGH&quot;).</p>
+<p>First, we need to know the value of <code>hashlib.sha256(username_trial).hexdigest()</code>, fo this, just print it when the program call <code>check_key</code>.</p>
+<p>We now know the value of it : <code>e8a1f9146d32473b9605568ca66f7b5c2db9f271f57a8c8e9e121e48accddf2f</code>.</p>
+<p>The first value of the rest of the flag can be found here:</p>
+<pre><code class="lang-python"><span class="hljs-keyword">if</span> <span class="hljs-keyword">key</span>[i] != hashlib.sha256(username_trial).hexdigest()[<span class="hljs-number">4</span>]:
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span>
+<span class="hljs-keyword">else</span>:
+    i += <span class="hljs-number">1</span>
+</code></pre>
+<p>It is the 5 value (don&#39;t forget that it starts from 0) of the hashed string we got earlier, so it is a &#39;f&#39;.</p>
+<p>We can continue this process for the rest of the function and get the flag!</p>
+<hr>
+<h3 id="crackme-py">crackme-py</h3>
+<p>This challenge  contain a useless program that choose the greatest value between two, but there is also en encoded string (<code>bezos_cc_secret</code>) and a decode function (<code>decode_secret</code>). If we call the decode function with the encoded string we can get the flag.</p>
+<hr>
+<h3 id="file-run1">file-run1</h3>
+<p>In this challenge we got one file <code>run</code>. After downloading this file we have to give us the permission to run it using <code>chmod</code>:</p>
+<pre><code class="lang-shell">chmod +x <span class="hljs-keyword">run</span><span class="bash"></span>
+</code></pre>
+<p>And then we can run the script to optain the flag.</p>
+<hr>
+<h3 id="file-run2">file-run2</h3>
+<p>For this challenge we got one file <code>run</code>.After downloading this file we have to give us the permission to run it using <code>chmod</code>:</p>
+<pre><code class="lang-shell">chmod +x <span class="hljs-keyword">run</span><span class="bash"></span>
+</code></pre>
+<p>And then we can run the script and get the following result:</p>
+<pre><code class="lang-shell">$ ./<span class="hljs-keyword">run</span>
+<span class="hljs-keyword">Run</span> this <span class="hljs-keyword">file</span> with only <span class="hljs-keyword">one</span> argument.
+</code></pre>
+<p>This give us the information that we have to run the script with one argument. Let&#39;s try:</p>
+<pre><code class="lang-shell">$ ./<span class="hljs-built_in">run</span> abc
+Won't you <span class="hljs-built_in">say</span> 'Hello!' <span class="hljs-keyword">to</span> <span class="hljs-keyword">me</span> <span class="hljs-keyword">first</span>?
+</code></pre>
+<p>I guess we have to run the script with the argument <code>Hello!</code>:</p>
+<pre><code class="lang-shell">$ ./<span class="hljs-keyword">run</span><span class="bash"> Hello!
+</span>The flag is: The flag :)
+</code></pre>
+<p>We got the flag!</p>
+<hr>
+<h3 id="patchme-py">patchme.py</h3>
+<p>For this challenge we get an encrypted flag and a python program that contain a function called <code>level_1_pw_check</code> that we are gonna analyse.</p>
+<pre><code class="lang-python"><span class="hljs-comment"># ...</span>
+
+def level_1_pw_check():
+    user_pw = input(<span class="hljs-string">"Please enter correct password for flag: "</span>)
+    <span class="hljs-keyword">if</span>( user_pw == <span class="hljs-string">"ak98"</span> + <span class="hljs-string">\</span>
+                   <span class="hljs-string">"-=90"</span> + <span class="hljs-string">\</span>
+                   <span class="hljs-string">"adfjhgj321"</span> + <span class="hljs-string">\</span>
+                   <span class="hljs-string">"sleuth9000"</span>):
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">"Welcome back... your flag, user:"</span>)
+        decryption = str_xor(flag_enc.decode(), <span class="hljs-string">"utilitarian"</span>)
+        <span class="hljs-built_in">print</span>(decryption)
+        <span class="hljs-keyword">return</span>
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">"That password is incorrect"</span>)
+
+level_1_pw_check()
+</code></pre>
+<p>This function is waiting for an input and then verify if it match with the wanted password.</p>
+<p>Our input must be the same as :</p>
+<pre><code class="lang-python"><span class="hljs-string">"ak98"</span> + <span class="hljs-string">\</span>
+<span class="hljs-string">"-=90"</span> + <span class="hljs-string">\</span>
+<span class="hljs-string">"adfjhgj321"</span> + <span class="hljs-string">\</span>
+<span class="hljs-string">"sleuth9000"</span>
+</code></pre>
+<p>This is just a concatenation of these strings, so the input must be <code>ak98-=90adfjhgj321sleuth9000</code>.</p>
+<p>Let&#39;s try it:</p>
+<pre><code class="lang-bash">$ py patchme.<span class="hljs-built_in">flag</span>.py
+Please enter correct password <span class="hljs-keyword">for</span> <span class="hljs-built_in">flag</span>: ak98-=<span class="hljs-number">90</span>adfjhgj321sleuth9000
+Welcome back... your <span class="hljs-built_in">flag</span>, user:
+The <span class="hljs-built_in">flag</span> :)
+</code></pre>
+<p>We got it!</p>
+<hr>
+<h3 id="safe-opener">Safe Opener</h3>
+<p>For this challenge, one file is given and we need to analyse it:</p>
+<p><strong>SafeOpener.java</strong></p>
+<pre><code class="lang-java"><span class="hljs-keyword">import</span> java.io.*;
+<span class="hljs-keyword">import</span> java.util.*;
+<span class="hljs-keyword">public</span> class SafeOpener {
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> main(<span class="hljs-keyword">String</span> args[]) <span class="hljs-keyword">throws</span> IOException {
+        <span class="hljs-keyword">BufferedReader</span> keyboard = <span class="hljs-keyword">new</span> <span class="hljs-keyword">BufferedReader</span>(<span class="hljs-keyword">new</span> InputStreamReader(System.in));
+        Base64.Encoder encoder = Base64.getEncoder();
+        <span class="hljs-keyword">String</span> encodedkey = <span class="hljs-string">""</span>;
+        <span class="hljs-keyword">String</span> <span class="hljs-built_in">key</span> = <span class="hljs-string">""</span>;
+        <span class="hljs-built_in">int</span> i = <span class="hljs-number">0</span>;
+        <span class="hljs-built_in">boolean</span> isOpen;
+
+
+        <span class="hljs-keyword">while</span> (i &lt; <span class="hljs-number">3</span>) {
+            System.out.<span class="hljs-built_in">print</span>(<span class="hljs-string">"Enter password for the safe: "</span>);
+            <span class="hljs-built_in">key</span> = keyboard.readLine();
+
+            encodedkey = encoder.encodeToString(<span class="hljs-built_in">key</span>.getBytes());
+            System.out.<span class="hljs-built_in">println</span>(encodedkey);
+
+            isOpen = openSafe(encodedkey);
+            <span class="hljs-keyword">if</span> (!isOpen) {
+                System.out.<span class="hljs-built_in">println</span>(<span class="hljs-string">"You have  "</span> + (<span class="hljs-number">2</span> - i) + <span class="hljs-string">" attempt(s) left"</span>);
+                i++;
+                <span class="hljs-keyword">continue</span>;
+            }
+            <span class="hljs-keyword">break</span>;
+        }
+    }
+
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">boolean</span> openSafe(<span class="hljs-keyword">String</span> password) {
+        <span class="hljs-keyword">String</span> encodedkey = <span class="hljs-string">"cGwzYXMzX2wzdF9tM18xbnQwX3RoM19zYWYz"</span>;
+
+        <span class="hljs-keyword">if</span> (password.equals(encodedkey)) {
+            System.out.<span class="hljs-built_in">println</span>(<span class="hljs-string">"Sesame open"</span>);
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+        }
+        <span class="hljs-keyword">else</span> {
+            System.out.<span class="hljs-built_in">println</span>(<span class="hljs-string">"Password is incorrect\n"</span>);
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+        }
+    }
+}
+</code></pre>
+<p>We have to analyse the first lines of the code after the main method:</p>
+<pre><code class="lang-java"><span class="hljs-keyword">BufferedReader </span>keyboard = new <span class="hljs-keyword">BufferedReader(new </span>InputStreamReader(System.in))<span class="hljs-comment">;</span>
+<span class="hljs-keyword">Base64.Encoder </span>encoder = <span class="hljs-keyword">Base64.getEncoder();
+</span>String encodedkey = <span class="hljs-string">""</span><span class="hljs-comment">;</span>
+String key = <span class="hljs-string">""</span><span class="hljs-comment">;</span>
+int i = <span class="hljs-number">0</span><span class="hljs-comment">;</span>
+<span class="hljs-keyword">boolean </span>isOpen<span class="hljs-comment">;</span>
+</code></pre>
+<p>We can find that <code>encoder</code> is a base 64 encoder.</p>
+<p>Now let&#39;s analyse the rest of the method:</p>
+<pre><code class="lang-java"><span class="hljs-keyword">while</span> (i &lt; <span class="hljs-number">3</span>) {
+    <span class="hljs-keyword">System</span>.out.<span class="hljs-keyword">print</span>(<span class="hljs-string">"Enter password for the safe: "</span>);
+    <span class="hljs-built_in">key</span> = keyboard.readLine();
+
+    encodedkey = encoder.encodeToString(<span class="hljs-built_in">key</span>.getBytes());
+    <span class="hljs-keyword">System</span>.out.println(encodedkey);
+
+    isOpen = openSafe(encodedkey);
+    <span class="hljs-keyword">if</span> (!isOpen) {
+        <span class="hljs-keyword">System</span>.out.println(<span class="hljs-string">"You have  "</span> + (<span class="hljs-number">2</span> - i) + <span class="hljs-string">" attempt(s) left"</span>);
+        i++;
+        <span class="hljs-keyword">continue</span>;
+    }
+    <span class="hljs-keyword">break</span>;
+}
+</code></pre>
+<p>The part of the code wait for an input, encode it with base 64 (<code>encoder</code> is a base 64 encoder), and then call the <code>openSafe</code> function with the encoded input and return <code>true</code> if it open and <code>false</code> if it don&#39;t. The next step is to analyse the <code>openSafe</code> function.</p>
+<pre><code class="lang-java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">boolean</span> openSafe(<span class="hljs-keyword">String</span> password) {
+    <span class="hljs-keyword">String</span> encodedkey = <span class="hljs-string">"cGwzYXMzX2wzdF9tM18xbnQwX3RoM19zYWYz"</span>;
+
+    <span class="hljs-keyword">if</span> (password.equals(encodedkey)) {
+        System.out.<span class="hljs-built_in">println</span>(<span class="hljs-string">"Sesame open"</span>);
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+    }
+    <span class="hljs-keyword">else</span> {
+        System.out.<span class="hljs-built_in">println</span>(<span class="hljs-string">"Password is incorrect\n"</span>);
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+    }
+}
+</code></pre>
+<p>This function has a string called <code>encodedkey</code> and is gonna verify if the string <code>password</code> given in argument is equal to <code>encodedkey</code>.</p>
+<p>We have to do some Reverse Engineering with the code.</p>
+<p>The <code>main</code> method take our input and encode it with base 64 and then the  <code>openSafe</code> function verify if the encoded input is equal to <code>encodedkey</code>. To make them match we have to decode <code>encodedkey</code> and put it as the input.</p>
+<p>The decoded version of <code>encodedkey</code> is : <code>&quot;pl3as3_l3t_m3_1nt0_th3_saf3&quot;</code>.</p>
+<p>We now got the password!</p>
+<hr>
+<h3 id="unpackme-py">unpackme.py</h3>
+<p>For this challenge we get one file <code>unpackme.flag.py</code> that contain this code:</p>
+<p><strong>unpackme.flag.py</strong></p>
+<pre><code class="lang-python"><span class="hljs-built_in">import</span> base64
+from cryptography.fernet <span class="hljs-built_in">import</span> Fernet
+
+
+
+<span class="hljs-attr">payload</span> = b'<span class="hljs-attr">gAAAAABkzWGSzE6VQNTzvRXOXekQeW4CY6NiRkzeImo9LuYBHAYw_hagTJLJL0c-kmNsjY33IUbU2IWlqxA3Fpp9S7RxNkiwMDZgLmRlI9-lGAEW-_i72RSDvylNR3QkpJW2JxubjLUC5VwoVgH62wxDuYu1rRD5KadwTADdABqsx2MkY6fKNTMCYY09Se6yjtRBftfTJUL-LKz2bwgXNd6O-WpbfXEMvCv3gNQ7sW4pgUnb-gDVZvrLNrug_1YFaIe3yKr0Awo0HIN3XMdZYpSE1c9P4G0sMQ=='</span>
+
+<span class="hljs-attr">key_str</span> = 'correctstaplecorrectstaplecorrec'
+<span class="hljs-attr">key_base64</span> = base64.b64encode(key_str.encode())
+<span class="hljs-attr">f</span> = Fernet(key_base64)
+<span class="hljs-attr">plain</span> = f.decrypt(payload)
+exec(plain.decode())
+</code></pre>
+<p>We got a payload, and a few lines that do different things and then we got the <code>exec</code> function that execute python code. And when you try to run the script it wait for an input, meaning that the <code>plain</code> variable contain python code as a string. We can print it to see what&#39;s inside and we can see the python code and the flag!</p>
+<hr>
+<h3 id="armassembly-0">ARMassembly 0</h3>
+<p>I achieved this challenge by following <a href="https://mariokartwii.com/armv8/">this</a> tutorial and understanding the main part of the program and then convert the given numbers into hex and got the flag.</p>
+<hr>
+<h3 id="ready-gladiator-0">Ready Gladiator 0</h3>
+<p>In this challenge we have to send a warrior to the server using <code>nc</code> and lose all our rounds.</p>
+<p>The starting warior is this one:</p>
+<p><strong>imp.red</strong></p>
+<pre><code>;redcode
+;<span class="hljs-keyword">name</span> Imp Ex
+;<span class="hljs-keyword">assert</span> <span class="hljs-number">1</span>
+mov <span class="hljs-number">0</span>, <span class="hljs-number">1</span>
+<span class="hljs-keyword">end</span>
+</code></pre><p>Just try to play with the mov values and you easily get the flag.</p>
+<hr>
+<h3 id="reverse">Reverse</h3>
+<p>Before searching too deep, just try to look at the content of a file :).</p>
+<hr>
+<h3 id="safe-opener-2">Safe Opener 2</h3>
+<p>Just use the grep or cat command!!!</p>
+<hr>
+<h3 id="armssembly-1">ARMssembly 1</h3>
+<p>This challenge is pretty interesting!</p>
+<p>One file is given <code>chall_1.S</code> and the goal of the challenge is to find for wich argument does the program print <code>You win!</code>.</p>
+<p>Let&#39;s have a look at the code:</p>
+<p><strong>chall_1.S</strong></p>
+<pre><code class="lang-nasm">    // ...
+<span class="hljs-symbol">func</span>:
+    // ...
+<span class="hljs-symbol">.LC0</span>:
+    .<span class="hljs-keyword">string </span>   <span class="hljs-string">"You win!"</span>
+    <span class="hljs-meta">.align</span>    <span class="hljs-number">3</span>
+<span class="hljs-symbol">.LC1</span>:
+    .<span class="hljs-keyword">string </span>   <span class="hljs-string">"You Lose :("</span>
+    <span class="hljs-meta">.text</span>
+    <span class="hljs-meta">.align</span>    <span class="hljs-number">2</span>
+    <span class="hljs-meta">.global</span>    main
+    .type    main, %<span class="hljs-meta">function</span>
+<span class="hljs-symbol">main</span>:
+    stp    x29, x30, [<span class="hljs-built_in">sp</span>, -<span class="hljs-number">48</span>]!
+    <span class="hljs-keyword">add </span>   x29, <span class="hljs-built_in">sp</span>, <span class="hljs-number">0</span>
+    <span class="hljs-keyword">str </span>   w0, [x29, <span class="hljs-number">28</span>]
+    <span class="hljs-keyword">str </span>   x1, [x29, <span class="hljs-number">16</span>]
+    <span class="hljs-keyword">ldr </span>   x0, [x29, <span class="hljs-number">16</span>]
+    <span class="hljs-keyword">add </span>   x0, x0, <span class="hljs-number">8</span>
+    <span class="hljs-keyword">ldr </span>   x0, [x0]
+    <span class="hljs-keyword">bl </span>   atoi
+    <span class="hljs-keyword">str </span>   w0, [x29, <span class="hljs-number">44</span>]
+    <span class="hljs-keyword">ldr </span>   w0, [x29, <span class="hljs-number">44</span>]
+    <span class="hljs-keyword">bl </span>   func
+    <span class="hljs-keyword">cmp </span>   w0, <span class="hljs-number">0</span>
+    <span class="hljs-keyword">bne </span>   .L4
+    <span class="hljs-keyword">adrp </span>   x0, .LC0
+    <span class="hljs-keyword">add </span>   x0, x0, :lo12:.LC0
+    <span class="hljs-keyword">bl </span>   puts
+    <span class="hljs-keyword">b </span>   .L6
+<span class="hljs-symbol">.L4</span>:
+    // ...
+<span class="hljs-symbol">.L6</span>:
+    // ...
+</code></pre>
+<h4 id="main">main</h4>
+<p>Let&#39;s analyse the <code>main</code> part.</p>
+<p>The first part of it do useless things for us, we just know that w0 doesn&#39;t change from the input parameter to the call of <code>func</code>. </p>
+<pre><code class="lang-nasm"><span class="hljs-symbol">stp</span>    x29, x30, [<span class="hljs-built_in">sp</span>, -<span class="hljs-number">48</span>]!
+<span class="hljs-keyword">add </span>   x29, <span class="hljs-built_in">sp</span>, <span class="hljs-number">0</span>
+<span class="hljs-keyword">str </span>   w0, [x29, <span class="hljs-number">28</span>]
+<span class="hljs-keyword">str </span>   x1, [x29, <span class="hljs-number">16</span>]
+<span class="hljs-keyword">ldr </span>   x0, [x29, <span class="hljs-number">16</span>]
+<span class="hljs-keyword">add </span>   x0, x0, <span class="hljs-number">8</span>
+<span class="hljs-keyword">ldr </span>   x0, [x0]
+<span class="hljs-keyword">bl </span>   atoi
+<span class="hljs-keyword">str </span>   w0, [x29, <span class="hljs-number">44</span>]
+<span class="hljs-keyword">ldr </span>   w0, [x29, <span class="hljs-number">44</span>]
+<span class="hljs-keyword">bl </span>   func
+</code></pre>
+<p>Then it check if <code>w0</code> is equal to zero, and if it is not, in go directly to <code>.L4</code> and don&#39;t go to <code>.LC0</code> (where the <code>You win!</code> is). So <code>w0</code> must be equal to zero afeter the call of <code>func</code>.</p>
+<h4 id="func">func</h4>
+<p>Let&#39;s look at the code inside this routine.</p>
+<pre><code class="lang-nasm"><span class="hljs-symbol">func</span>:
+    <span class="hljs-keyword">sub </span>   <span class="hljs-built_in">sp</span>, <span class="hljs-built_in">sp</span>, <span class="hljs-number">#32</span>
+    <span class="hljs-keyword">str </span>   w0, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">12</span>]
+    <span class="hljs-keyword">mov </span>   w0, <span class="hljs-number">79</span>
+    <span class="hljs-keyword">str </span>   w0, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">16</span>]
+    <span class="hljs-keyword">mov </span>   w0, <span class="hljs-number">7</span>
+    <span class="hljs-keyword">str </span>   w0, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">20</span>]
+    <span class="hljs-keyword">mov </span>   w0, <span class="hljs-number">3</span>
+    <span class="hljs-keyword">str </span>   w0, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">24</span>]
+    <span class="hljs-keyword">ldr </span>   w0, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">20</span>]
+    <span class="hljs-keyword">ldr </span>   w1, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">16</span>]
+    <span class="hljs-keyword">lsl </span>   w0, w1, w0
+    <span class="hljs-keyword">str </span>   w0, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">28</span>]
+    <span class="hljs-keyword">ldr </span>   w1, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">28</span>]
+    <span class="hljs-keyword">ldr </span>   w0, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">24</span>]
+    sdiv    w0, w1, w0
+    <span class="hljs-keyword">str </span>   w0, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">28</span>]
+    <span class="hljs-keyword">ldr </span>   w1, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">28</span>]
+    <span class="hljs-keyword">ldr </span>   w0, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">12</span>]
+    <span class="hljs-keyword">sub </span>   w0, w1, w0
+    <span class="hljs-keyword">str </span>   w0, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">28</span>]
+    <span class="hljs-keyword">ldr </span>   w0, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">28</span>]
+    <span class="hljs-keyword">add </span>   <span class="hljs-built_in">sp</span>, <span class="hljs-built_in">sp</span>, <span class="hljs-number">32</span>
+    ret
+</code></pre>
+<p>Ok, the function is using the stack pointer <code>sp</code> and doing things with w0 and w1. Let&#39;s try to understand how this work.</p>
+<p>The first line <code>sub sp, sp, #32</code> move the stack pointer to <code>sp</code> - 32. So the function should use the space here to store values. And then we store 4 values.</p>
+<pre><code class="lang-nasm"><span class="hljs-keyword">str </span>   w0, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">12</span>]
+<span class="hljs-keyword">mov </span>   w0, <span class="hljs-number">79</span>
+<span class="hljs-keyword">str </span>   w0, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">16</span>]
+<span class="hljs-keyword">mov </span>   w0, <span class="hljs-number">7</span>
+<span class="hljs-keyword">str </span>   w0, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">20</span>]
+<span class="hljs-keyword">mov </span>   w0, <span class="hljs-number">3</span>
+<span class="hljs-keyword">str </span>   w0, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">24</span>]
+</code></pre>
+<p>So the stack looks like this:</p>
+<pre><code class="lang-mermaid">gantt
+    dateFormat X
+    axisFormat %s
+    section Stack
+    Stack    : 0, 32
+    w0    : 12, 16
+    <span class="hljs-number">79</span>    : 16, 20
+    <span class="hljs-number">7</span>     : 20, 24
+    <span class="hljs-number">3</span>     : 24, 28
+</code></pre>
+<p>Then two instructions that follow load the value 7 into <code>w0</code> and 79 into <code>w1</code>.</p>
+<pre><code class="lang-nasm"><span class="hljs-keyword">ldr </span>   w0, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">20</span>]
+<span class="hljs-keyword">ldr </span>   w1, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">16</span>]
+</code></pre>
+<p><code>w1</code> = 79</p>
+<p><code>w0</code> = 7</p>
+<p>Now the next line operate a bit shift to the left. The new value of <code>w0</code> is gonna be <code>w1</code> &lt;&lt; <code>w0</code> so 79 &lt;&lt; 7 which is 10112.</p>
+<pre><code class="lang-nasm"><span class="hljs-keyword">lsl </span>   w0, w1, w0
+</code></pre>
+<p><code>w0</code> = 10112</p>
+<p>The next three instructions store the value 10112 in the stack and load values from the stack to <code>w1</code> and <code>w0</code>.</p>
+<pre><code class="lang-nasm"><span class="hljs-keyword">str </span>   w0, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">28</span>]
+<span class="hljs-keyword">ldr </span>   w1, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">28</span>]
+<span class="hljs-keyword">ldr </span>   w0, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">24</span>]
+</code></pre>
+<pre><code class="lang-mermaid">gantt
+    dateFormat X
+    axisFormat %s
+    section Stack
+    Stack    : 0, 32
+    w0    : 12, 16
+    <span class="hljs-number">79</span>    : 16, 20
+    <span class="hljs-number">7</span>     : 20, 24
+    <span class="hljs-number">3</span>     : 24, 28
+    <span class="hljs-number">10112</span> : 28, 32
+</code></pre>
+<p><code>w1</code> = 10112</p>
+<p><code>w0</code> = 3</p>
+<p>Now, the next instruction divide <code>w1</code> by <code>w0</code> and put the value inside <code>w0</code>, so 10112/3 = 3370.6666666... I suppose it just take the 3370 into <code>w0</code>. </p>
+<pre><code class="lang-nasm"><span class="hljs-attribute">sdiv</span> w0, w1, w0
+</code></pre>
+<p><code>w0</code> = 3370</p>
+<p>Then it store the number into the stack and load other values from the stack to <code>w1</code> and <code>w0</code>.</p>
+<pre><code class="lang-nasm"><span class="hljs-keyword">str </span>   w0, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">28</span>]
+<span class="hljs-keyword">ldr </span>   w1, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">28</span>]
+<span class="hljs-keyword">ldr </span>   w0, [<span class="hljs-built_in">sp</span>, <span class="hljs-number">12</span>]
+</code></pre>
+<pre><code class="lang-mermaid">gantt
+    dateFormat X
+    axisFormat %s
+    section Stack
+    Stack    : 0, 32
+    w0    : 12, 16
+    <span class="hljs-number">79</span>    : 16, 20
+    <span class="hljs-number">7</span>     : 20, 24
+    <span class="hljs-number">3</span>     : 24, 28
+    <span class="hljs-number">3370</span>  : 28, 32
+</code></pre>
+<p><code>w0</code> = <code>w0</code>(original value)</p>
+<p><code>w1</code> = 3370</p>
+<p>Now the next instruction put <code>w1</code> - <code>w0</code> into <code>w0</code>.</p>
+<pre><code class="lang-nasm"><span class="hljs-keyword">sub </span>   w0, w1, w0
+</code></pre>
+<p><code>w0</code> = 3370 - <code>w0</code>(original value)</p>
+<p>Then the rest of the function don&#39;t change <code>w0</code>, this mean that we now know what <code>w0</code> is equal after the a call to <code>func</code>.</p>
+<h4 id="end-the-challenge">end the challenge</h4>
+<p>We are now here, after the call to <code>func</code>.</p>
+<pre><code class="lang-nasm"><span class="hljs-keyword">bl </span>   func
+<span class="hljs-keyword">cmp </span>   w0, <span class="hljs-number">0</span>
+<span class="hljs-keyword">bne </span>   .L4
+<span class="hljs-keyword">adrp </span>   x0, .LC0
+</code></pre>
+<p>So remember, we had to get  <code>w0</code> equal to zero, and since after the call to <code>func</code> <code>w0</code> = 3370 - <code>w0</code>(original value), we found that <code>w0</code> must be equal to 3370 to get <code>You win!</code> printed. We have to convert it to hexa and we got the flag!</p>
+<hr>

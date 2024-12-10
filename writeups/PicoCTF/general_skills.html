@@ -1,0 +1,837 @@
+<h1 id="picoctf">picoCTF</h1>
+<hr>
+<h2 id="general-skills">General Skills</h2>
+<hr>
+<h3 id="pw-crack-1">PW Crack 1</h3>
+<p>Here is the challenge :</p>
+<pre><code class="lang-bash"><span class="hljs-selector-tag">PW_Crack_1</span>
+├── <span class="hljs-selector-tag">level1</span><span class="hljs-selector-class">.flag</span><span class="hljs-selector-class">.txt</span><span class="hljs-selector-class">.enc</span>
+└── <span class="hljs-selector-tag">level1</span><span class="hljs-selector-class">.py</span>
+</code></pre>
+<p>The file <code>level1.flag.txt.enc</code> is just the encrypted flag.</p>
+<p>But the <code>level1.py</code> contain this code :</p>
+<p><strong>level1.py</strong></p>
+<pre><code class="lang-python"><span class="hljs-comment"># ...</span>
+
+flag_enc = open(<span class="hljs-string">'level1.flag.txt.enc'</span>, <span class="hljs-string">'rb'</span>).read()
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">level_1_pw_check</span><span class="hljs-params">()</span>:</span>
+    user_pw = input(<span class="hljs-string">"Please enter correct password for flag: "</span>)
+    <span class="hljs-keyword">if</span>( user_pw == <span class="hljs-string">"691d"</span>):
+        print(<span class="hljs-string">"Welcome back... your flag, user:"</span>)
+        decryption = str_xor(flag_enc.decode(), user_pw)
+        print(decryption)
+        <span class="hljs-keyword">return</span>
+    print(<span class="hljs-string">"That password is incorrect"</span>)
+
+
+
+level_1_pw_check()
+</code></pre>
+<p>So this program just call level_1_pw_check and then wait for a user input. If the user input is <code>&quot;691d&quot;</code> then is print the decrypted flag.</p>
+<p>So we just have to write <code>691d</code> as a password and then we got the flag!</p>
+<hr>
+<h3 id="pw-crack-2">PW Crack 2</h3>
+<p>Here is the challenge :</p>
+<pre><code class="lang-bash"><span class="hljs-selector-tag">PW_Crack_2</span>
+├── <span class="hljs-selector-tag">level2</span><span class="hljs-selector-class">.flag</span><span class="hljs-selector-class">.txt</span><span class="hljs-selector-class">.enc</span>
+└── <span class="hljs-selector-tag">level2</span><span class="hljs-selector-class">.py</span>
+</code></pre>
+<p>The file <code>level2.flag.txt.enc</code> is just the encrypted flag.</p>
+<p>But the <code>level2.py</code> contain this code :</p>
+<p><strong>level2.py</strong></p>
+<pre><code class="lang-python"><span class="hljs-comment"># ...</span>
+
+flag_enc = <span class="hljs-keyword">open</span>(<span class="hljs-string">'level2.flag.txt.enc'</span>, <span class="hljs-string">'rb'</span>).read()
+
+def level_2_pw_check():
+    user_pw = input(<span class="hljs-string">"Please enter correct password for flag: "</span>)
+    <span class="hljs-keyword">if</span>( user_pw == <span class="hljs-keyword">chr</span>(<span class="hljs-number">0x33</span>) + <span class="hljs-keyword">chr</span>(<span class="hljs-number">0x39</span>) + <span class="hljs-keyword">chr</span>(<span class="hljs-number">0x63</span>) + <span class="hljs-keyword">chr</span>(<span class="hljs-number">0x65</span>) ):
+        <span class="hljs-keyword">print</span>(<span class="hljs-string">"Welcome back... your flag, user:"</span>)
+        decryption = str_xor(flag_enc.decode(), user_pw)
+        <span class="hljs-keyword">print</span>(decryption)
+        <span class="hljs-keyword">return</span>
+    <span class="hljs-keyword">print</span>(<span class="hljs-string">"That password is incorrect"</span>)
+
+level_2_pw_check()
+</code></pre>
+<p>So this program just call level_2_pw_check and then wait for a user input.</p>
+<p>Then the program verify if the input is <code>chr(0x33) + chr(0x39) + chr(0x63) + chr(0x65)</code></p>
+<p>Than correspond to <code>39ce</code>, so we got the password to get the flag!</p>
+<hr>
+<h3 id="pw-crack-3">PW Crack 3</h3>
+<p>Here is the challenge :</p>
+<pre><code class="lang-bash">PW_Crack_3
+├── level3<span class="hljs-selector-class">.flag</span><span class="hljs-selector-class">.txt</span><span class="hljs-selector-class">.enc</span>
+├── level3<span class="hljs-selector-class">.hash</span><span class="hljs-selector-class">.bin</span>
+└── level3.py
+</code></pre>
+<p>So we got 2 files that contain some binary strings (<code>level3.flag.txt.enc</code> and <code>level3.hash.bin</code>) that are not useful for the moment.</p>
+<p>Then we got <code>level3.py</code> that contain nice code:</p>
+<p><strong>level3.py</strong></p>
+<pre><code class="lang-python"><span class="hljs-comment"># ...</span>
+
+flag_enc = open(<span class="hljs-string">'level3.flag.txt.enc'</span>, <span class="hljs-string">'rb'</span>).read()
+correct_pw_hash = open(<span class="hljs-string">'level3.hash.bin'</span>, <span class="hljs-string">'rb'</span>).read()
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">hash_pw</span><span class="hljs-params">(pw_str)</span>:</span>
+    pw_bytes = bytearray()
+    pw_bytes.extend(pw_str.encode())
+    m = hashlib.md5()
+    m.update(pw_bytes)
+    <span class="hljs-keyword">return</span> m.digest()
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">level_3_pw_check</span><span class="hljs-params">()</span>:</span>
+    user_pw = input(<span class="hljs-string">"Please enter correct password for flag: "</span>)
+    user_pw_hash = hash_pw(user_pw)
+
+    <span class="hljs-keyword">if</span>( user_pw_hash == correct_pw_hash ):
+        print(<span class="hljs-string">"Welcome back... your flag, user:"</span>)
+        decryption = str_xor(flag_enc.decode(), user_pw)
+        print(decryption)
+        <span class="hljs-keyword">return</span>
+    print(<span class="hljs-string">"That password is incorrect"</span>)
+
+level_3_pw_check()
+
+<span class="hljs-comment"># The strings below are 7 possibilities for the correct password.</span>
+<span class="hljs-comment">#   (Only 1 is correct)</span>
+pos_pw_list = [<span class="hljs-string">"6997"</span>, <span class="hljs-string">"3ac8"</span>, <span class="hljs-string">"f0ac"</span>, <span class="hljs-string">"4b17"</span>, <span class="hljs-string">"ec27"</span>, <span class="hljs-string">"4e66"</span>, <span class="hljs-string">"865e"</span>]
+</code></pre>
+<p>So we got <code>hash_py</code> function that is supposed to return the hashed + bin of a string. And we got <code>level_3_pw_check</code> that is like the other <strong>PW Crack X</strong> just verifying if the string correspond to the password and then print the flag.</p>
+<p>There is also the list <code>pos_pw_list</code> that contain 7 possible passwords and the right one. So we just have to try to encode each password in this list and then look if it correspond to the password in <code>level3.hash.bin</code>.</p>
+<p>We just have to add few lines of code :</p>
+<pre><code class="lang-python"><span class="hljs-keyword">for</span> password in pos_pw_list:
+    <span class="hljs-keyword">if</span>(hash_pw(password) == correct_pw_hash):
+        print(<span class="hljs-string">"The password is :"</span>, password)
+</code></pre>
+<p>And we after executing the script, we got the password!</p>
+<p>Note that we also can try all the password here and get the right one.</p>
+<hr>
+<h3 id="pw-crack-4">PW Crack 4</h3>
+<p>Here is the challenge :</p>
+<pre><code class="lang-bash">PW_Crack_4
+├── level4<span class="hljs-selector-class">.flag</span><span class="hljs-selector-class">.txt</span><span class="hljs-selector-class">.enc</span>
+├── level4<span class="hljs-selector-class">.hash</span><span class="hljs-selector-class">.bin</span>
+└── level4.py
+</code></pre>
+<p>So we got 2 files that contain some binary strings (<code>level4.flag.txt.enc</code> and <code>level4.hash.bin</code>) that are not useful for the moment.</p>
+<p>But we got <code>level4.py</code> that contain this code:</p>
+<pre><code class="lang-python"><span class="hljs-comment"># ...</span>
+
+flag_enc = open(<span class="hljs-string">'level4.flag.txt.enc'</span>, <span class="hljs-string">'rb'</span>).read()
+correct_pw_hash = open(<span class="hljs-string">'level4.hash.bin'</span>, <span class="hljs-string">'rb'</span>).read()
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">hash_pw</span><span class="hljs-params">(pw_str)</span>:</span>
+    pw_bytes = bytearray()
+    pw_bytes.extend(pw_str.encode())
+    m = hashlib.md5()
+    m.update(pw_bytes)
+    <span class="hljs-keyword">return</span> m.digest()
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">level_4_pw_check</span><span class="hljs-params">()</span>:</span>
+    user_pw = input(<span class="hljs-string">"Please enter correct password for flag: "</span>)
+    user_pw_hash = hash_pw(user_pw)
+
+    <span class="hljs-keyword">if</span>( user_pw_hash == correct_pw_hash ):
+        print(<span class="hljs-string">"Welcome back... your flag, user:"</span>)
+        decryption = str_xor(flag_enc.decode(), user_pw)
+        print(decryption)
+        <span class="hljs-keyword">return</span>
+    print(<span class="hljs-string">"That password is incorrect"</span>)
+
+
+
+level_4_pw_check()
+
+
+
+<span class="hljs-comment"># The strings below are 100 possibilities for the correct password.</span>
+<span class="hljs-comment">#   (Only 1 is correct)</span>
+pos_pw_list = [<span class="hljs-string">"6288"</span>, <span class="hljs-string">"6152"</span>, <span class="hljs-string">"4c7a"</span>, <span class="hljs-string">"b722"</span>, <span class="hljs-string">"9a6e"</span>, <span class="hljs-string">"6717"</span>, <span class="hljs-string">"4389"</span>, <span class="hljs-string">"1a28"</span>, <span class="hljs-string">"37ac"</span>, <span class="hljs-string">"de4f"</span>, <span class="hljs-string">"eb28"</span>, <span class="hljs-string">"351b"</span>, <span class="hljs-string">"3d58"</span>, <span class="hljs-string">"948b"</span>, <span class="hljs-string">"231b"</span>, <span class="hljs-string">"973a"</span>, <span class="hljs-string">"a087"</span>, <span class="hljs-string">"384a"</span>, <span class="hljs-string">"6d3c"</span>, <span class="hljs-string">"9065"</span>, <span class="hljs-string">"725c"</span>, <span class="hljs-string">"fd60"</span>, <span class="hljs-string">"4d4f"</span>, <span class="hljs-string">"6a60"</span>, <span class="hljs-string">"7213"</span>, <span class="hljs-string">"93e6"</span>, <span class="hljs-string">"8c54"</span>, <span class="hljs-string">"537d"</span>, <span class="hljs-string">"a1da"</span>, <span class="hljs-string">"c718"</span>, <span class="hljs-string">"9de8"</span>, <span class="hljs-string">"ebe3"</span>, <span class="hljs-string">"f1c5"</span>, <span class="hljs-string">"a0bf"</span>, <span class="hljs-string">"ccab"</span>, <span class="hljs-string">"4938"</span>, <span class="hljs-string">"8f97"</span>, <span class="hljs-string">"3327"</span>, <span class="hljs-string">"8029"</span>, <span class="hljs-string">"41f2"</span>, <span class="hljs-string">"a04f"</span>, <span class="hljs-string">"c7f9"</span>, <span class="hljs-string">"b453"</span>, <span class="hljs-string">"90a5"</span>, <span class="hljs-string">"25dc"</span>, <span class="hljs-string">"26b0"</span>, <span class="hljs-string">"cb42"</span>, <span class="hljs-string">"de89"</span>, <span class="hljs-string">"2451"</span>, <span class="hljs-string">"1dd3"</span>, <span class="hljs-string">"7f2c"</span>, <span class="hljs-string">"8919"</span>, <span class="hljs-string">"f3a9"</span>, <span class="hljs-string">"b88f"</span>, <span class="hljs-string">"eaa8"</span>, <span class="hljs-string">"776a"</span>, <span class="hljs-string">"6236"</span>, <span class="hljs-string">"98f5"</span>, <span class="hljs-string">"492b"</span>, <span class="hljs-string">"507d"</span>, <span class="hljs-string">"18e8"</span>, <span class="hljs-string">"cfb5"</span>, <span class="hljs-string">"76fd"</span>, <span class="hljs-string">"6017"</span>, <span class="hljs-string">"30de"</span>, <span class="hljs-string">"bbae"</span>, <span class="hljs-string">"354e"</span>, <span class="hljs-string">"4013"</span>, <span class="hljs-string">"3153"</span>, <span class="hljs-string">"e9cc"</span>, <span class="hljs-string">"cba9"</span>, <span class="hljs-string">"25ea"</span>, <span class="hljs-string">"c06c"</span>, <span class="hljs-string">"a166"</span>, <span class="hljs-string">"faf1"</span>, <span class="hljs-string">"2264"</span>, <span class="hljs-string">"2179"</span>, <span class="hljs-string">"cf30"</span>, <span class="hljs-string">"4b47"</span>, <span class="hljs-string">"3446"</span>, <span class="hljs-string">"b213"</span>, <span class="hljs-string">"88a3"</span>, <span class="hljs-string">"6253"</span>, <span class="hljs-string">"db88"</span>, <span class="hljs-string">"c38c"</span>, <span class="hljs-string">"a48c"</span>, <span class="hljs-string">"3e4f"</span>, <span class="hljs-string">"7208"</span>, <span class="hljs-string">"9dcb"</span>, <span class="hljs-string">"fc77"</span>, <span class="hljs-string">"e2cf"</span>, <span class="hljs-string">"8552"</span>, <span class="hljs-string">"f6f8"</span>, <span class="hljs-string">"7079"</span>, <span class="hljs-string">"42ef"</span>, <span class="hljs-string">"391e"</span>, <span class="hljs-string">"8a6d"</span>, <span class="hljs-string">"2154"</span>, <span class="hljs-string">"d964"</span>, <span class="hljs-string">"49ec"</span>]
+</code></pre>
+<p>So we got <code>hash_py</code> function that is supposed to return the hashed + bin of a string. And we got <code>level_4_pw_check</code> that is like the other <strong>PW Crack X</strong> just verifying if the string correspond to the password and then print the flag.</p>
+<p>But we got <code>pos_pw_list</code> that contain all 100 possible passwords and only one is correct. </p>
+<p>So let&#39;s write some code after this code:</p>
+<pre><code class="lang-python"><span class="hljs-keyword">for</span> password in pos_pw_list:
+    <span class="hljs-keyword">if</span>(hash_pw(password) == correct_pw_hash):
+        print(<span class="hljs-string">"The password is :"</span>, password)
+</code></pre>
+<p>And after running the script we got the password and the flag!</p>
+<hr>
+<h3 id="pw-crack-5">PW Crack 5</h3>
+<p>Here is the challenge:</p>
+<pre><code class="lang-bash">PW_Crack_5
+├── dictionary<span class="hljs-selector-class">.txt</span>
+├── level5<span class="hljs-selector-class">.flag</span><span class="hljs-selector-class">.txt</span><span class="hljs-selector-class">.enc</span>
+├── level5<span class="hljs-selector-class">.hash</span><span class="hljs-selector-class">.bin</span>
+└── level5.py
+</code></pre>
+<p>So we got 2 files that contain some binary strings (<code>level5.flag.txt.enc</code> and <code>level5.hash.bin</code>) that are not useful for the moment.</p>
+<p>But we got <code>dictionary.txt</code> that contain a lot of words with a <code>\n</code> between each. Each word is a possible password as said in the challenge description.</p>
+<p>And then we got <code>level5.py</code> that contain this code:</p>
+<pre><code class="lang-python"><span class="hljs-comment"># ...</span>
+
+flag_enc = open(<span class="hljs-string">'level5.flag.txt.enc'</span>, <span class="hljs-string">'rb'</span>).read()
+correct_pw_hash = open(<span class="hljs-string">'level5.hash.bin'</span>, <span class="hljs-string">'rb'</span>).read()
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">hash_pw</span><span class="hljs-params">(pw_str)</span>:</span>
+    pw_bytes = bytearray()
+    pw_bytes.extend(pw_str.encode())
+    m = hashlib.md5()
+    m.update(pw_bytes)
+    <span class="hljs-keyword">return</span> m.digest()
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">level_5_pw_check</span><span class="hljs-params">()</span>:</span>
+    user_pw = input(<span class="hljs-string">"Please enter correct password for flag: "</span>)
+    user_pw_hash = hash_pw(user_pw)
+
+    <span class="hljs-keyword">if</span>( user_pw_hash == correct_pw_hash ):
+        print(<span class="hljs-string">"Welcome back... your flag, user:"</span>)
+        decryption = str_xor(flag_enc.decode(), user_pw)
+        print(decryption)
+        <span class="hljs-keyword">return</span>
+    print(<span class="hljs-string">"That password is incorrect"</span>)
+
+
+
+level_5_pw_check()
+</code></pre>
+<p>So we got <code>hash_py</code> function that is supposed to return the hashed + bin of a string. And we got <code>level_5_pw_check</code> that is like the other <strong>PW Crack X</strong> just verifying if the string correspond to the password and then print the flag.</p>
+<p>So the most simple way to solve this challenge is to add some code that open the file <code>dictionary.txt</code>, get all the possible passwords and then for each password if the is the right one.</p>
+<p>The added code:</p>
+<pre><code class="lang-python"><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">"dictionary.txt"</span>, <span class="hljs-string">'r'</span>) <span class="hljs-keyword">as</span> <span class="hljs-built_in">file</span>:
+    passwords = <span class="hljs-built_in">file</span>.<span class="hljs-built_in">read</span>().<span class="hljs-built_in">split</span>()
+
+<span class="hljs-keyword">for</span> password <span class="hljs-keyword">in</span> passwords:
+    <span class="hljs-keyword">if</span>(hash_pw(password) == correct_pw_hash):
+        print(<span class="hljs-string">"The password is :"</span>, password)
+</code></pre>
+<p>And then we can find the password :)</p>
+<hr>
+<h3 id="runme-py">runme.py</h3>
+<p>There is only the file <code>runme.py</code> that literaly contain the flag, I don&#39;t know what the challenge was supposed to be.</p>
+<hr>
+<h3 id="serpentine">Serpentine</h3>
+<p>In this challenge there is just a file <code>serpentine.py</code>.</p>
+<p>There is also a <code>print_flag</code> function, to solve this challenge, just call this function and the flag will be printed.</p>
+<hr>
+<h3 id="first-find">First Find</h3>
+<p>First, we have to download the zip and unzip it.</p>
+<p>We got this architecture:</p>
+<pre><code class="lang-bash">files
+├── <span class="hljs-number">13771</span><span class="hljs-selector-class">.txt</span><span class="hljs-selector-class">.utf-8</span>
+├── <span class="hljs-number">14789</span><span class="hljs-selector-class">.txt</span><span class="hljs-selector-class">.utf-8</span>
+├── acceptable_books
+│   ├── <span class="hljs-number">17879</span><span class="hljs-selector-class">.txt</span><span class="hljs-selector-class">.utf-8</span>
+│   ├── <span class="hljs-number">17880</span><span class="hljs-selector-class">.txt</span><span class="hljs-selector-class">.utf-8</span>
+│   └── more_books
+│       └── <span class="hljs-number">40723</span><span class="hljs-selector-class">.txt</span><span class="hljs-selector-class">.utf-8</span>
+├── adequate_books
+│   ├── <span class="hljs-number">44578</span><span class="hljs-selector-class">.txt</span><span class="hljs-selector-class">.utf-8</span>
+│   ├── <span class="hljs-number">46804</span>-<span class="hljs-number">0</span><span class="hljs-selector-class">.txt</span>
+│   └── more_books
+│       └── <span class="hljs-number">1023</span><span class="hljs-selector-class">.txt</span><span class="hljs-selector-class">.utf-8</span>
+└── satisfactory_books
+    ├── <span class="hljs-number">16021</span><span class="hljs-selector-class">.txt</span><span class="hljs-selector-class">.utf-8</span>
+    ├── <span class="hljs-number">23765</span><span class="hljs-selector-class">.txt</span><span class="hljs-selector-class">.utf-8</span>
+    └── more_books
+        └── <span class="hljs-number">37121</span><span class="hljs-selector-class">.txt</span><span class="hljs-selector-class">.utf-8</span>
+</code></pre>
+<p>The goal of this challenge is to find a file named <code>uber-secret.txt</code> we just have write a little command with <code>find</code> to get the path of the file and then look at what&#39;s inside.</p>
+<hr>
+<h3 id="big-zip">Big Zip</h3>
+<p>In this challenge we have a lot of file and directory with shitty text inside. So can search for a text inside a file, for example, all the flags start with <code>picoCTF</code> so searching for this string inside all the files is the right solution. With a little command that I found on <a href="https://geeksforgeeks.org">geeksforgeeks.org</a> that combine <code>find</code> and <code>grep</code> command.</p>
+<p>The command:</p>
+<pre><code class="lang-shell"><span class="hljs-built_in">find</span> -<span class="hljs-built_in">type</span> f -<span class="hljs-built_in">exec</span> grep -lr <span class="hljs-string">"picoCTF*"</span> {} \;
+</code></pre>
+<p>And then we get the directory of the file containing this string and after displaying the content of the file we get the flag!</p>
+<hr>
+<h3 id="chrono">chrono</h3>
+<p>For this challenge we have to connect to the server using ssh. The challenge talk about automate tasks to run on intervals on linux, I didn&#39;t knew what this challenge was about so as everyone else, I search how to automate tasks on linux. And the first website talked about <strong>Crontab</strong> and a file <code>/etc/crontab</code> so I looked inside this file and found the flag!</p>
+<hr>
+<h3 id="money-ware">money-ware</h3>
+<p>The challenge give a bitcoin address and we have to find the name of the malware that own the bitcoin address, we can got this by searching the bitcoin address on any search engine.</p>
+<hr>
+<h3 id="permissions">Permissions</h3>
+<p>In this challenge we have to connect through ssh to the server. The goal of this challenge is to read files in root directory. I didn&#39;t knew how to look at my permissions so I searched on the internet and found <code>sudo -l</code> command that contains what I&#39;m allow to use. And I saw that there was a command that I can use as a root <code>/usr/bin/vi</code> which is a text editor that also can execute commands, so I openned <code>vi</code> and tried to open a shell with <code>:!/bin/bash</code>. </p>
+<p>After this we have a shell as root user and we can find the hidden file in <code>/root</code> directory to get the flag.</p>
+<hr>
+<h3 id="repetitions">repetitions</h3>
+<p>This challenge is all about base64, we get a file that contain few lines with base64 encoded strings, so I tried to decode them, but that didn&#39;t turn nice, as the hint suggest, <em>Multiple decoding is always good.</em> so maybe the base64 encoded strings can be decode multiple times.</p>
+<p>So I wrote a script that took every lines and try to decode th/em. But that didn&#39;t work because these base64 encoded strings can be seen as a whole base64 encode strings, so after modifying my script I got this :</p>
+<pre><code class="lang-python"><span class="hljs-keyword">import</span> base64
+
+<span class="hljs-keyword">with</span> open(<span class="hljs-string">"enc_flag"</span>, <span class="hljs-string">"r"</span>) <span class="hljs-keyword">as</span> f:
+    strings = f.read().replace(<span class="hljs-string">"\n"</span>, <span class="hljs-string">""</span>)
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">solve_b64</span><span class="hljs-params">(string)</span>:</span>
+    <span class="hljs-keyword">while</span> <span class="hljs-keyword">True</span>:
+        <span class="hljs-keyword">try</span>:
+            string = (base64.b64decode(string.encode(<span class="hljs-string">'ascii'</span>))).decode(<span class="hljs-string">'ascii'</span>)
+            <span class="hljs-keyword">if</span> <span class="hljs-string">"picoCTF"</span> <span class="hljs-keyword">in</span> string:
+                print(<span class="hljs-string">"Found the flag:"</span>, string)
+                <span class="hljs-keyword">return</span>
+        <span class="hljs-keyword">except</span>:
+            <span class="hljs-keyword">break</span>;
+    <span class="hljs-keyword">return</span>;
+
+solve_b64(strings)
+</code></pre>
+<p>And then I could get the flag!</p>
+<hr>
+<h3 id="ascii-numbers">ASCII Numbers</h3>
+<p>In this challenge, ascii string is given:</p>
+<pre><code class="lang-python"><span class="hljs-number">0x70</span> <span class="hljs-number">0x69</span> <span class="hljs-number">0x63</span> <span class="hljs-number">0x6f</span> <span class="hljs-number">0x43</span> <span class="hljs-number">0x54</span> <span class="hljs-number">0x46</span> <span class="hljs-number">0x7b</span> <span class="hljs-number">0x34</span> <span class="hljs-number">0x35</span> <span class="hljs-number">0x63</span> <span class="hljs-number">0x31</span> <span class="hljs-number">0x31</span> <span class="hljs-number">0x5f</span> <span class="hljs-number">0x6e</span> <span class="hljs-number">0x30</span> <span class="hljs-number">0x5f</span> <span class="hljs-number">0x71</span> <span class="hljs-number">0x75</span> <span class="hljs-number">0x33</span> <span class="hljs-number">0x35</span> <span class="hljs-number">0x37</span> <span class="hljs-number">0x31</span> <span class="hljs-number">0x30</span> <span class="hljs-number">0x6e</span> <span class="hljs-number">0x35</span> <span class="hljs-number">0x5f</span> <span class="hljs-number">0x31</span> <span class="hljs-number">0x6c</span> <span class="hljs-number">0x6c</span> <span class="hljs-number">0x5f</span> <span class="hljs-number">0x74</span> <span class="hljs-number">0x33</span> <span class="hljs-number">0x31</span> <span class="hljs-number">0x31</span> <span class="hljs-number">0x5f</span> <span class="hljs-number">0x79</span> <span class="hljs-number">0x33</span> <span class="hljs-number">0x5f</span> <span class="hljs-number">0x6e</span> <span class="hljs-number">0x30</span> <span class="hljs-number">0x5f</span> <span class="hljs-number">0x6c</span> <span class="hljs-number">0x31</span> <span class="hljs-number">0x33</span> <span class="hljs-number">0x35</span> <span class="hljs-number">0x5f</span> <span class="hljs-number">0x34</span> <span class="hljs-number">0x34</span> <span class="hljs-number">0x35</span> <span class="hljs-number">0x64</span> <span class="hljs-number">0x34</span> <span class="hljs-number">0x31</span> <span class="hljs-number">0x38</span> <span class="hljs-number">0x30</span> <span class="hljs-number">0x7d</span>
+</code></pre>
+<p>We have to convert it to a readable string.</p>
+<p>So let&#39;s write a little algorithm that convert these into the corresponding string.</p>
+<p>The algorithm is going to go through each hexa values (the <code>0xAB</code>) and get the <code>A</code> and the <code>B</code> to get the corresponding character. </p>
+<pre><code class="lang-python">def character_hex_2_dec_lowercase(c):
+    <span class="hljs-keyword">if</span> c &lt; <span class="hljs-string">'a'</span>:
+        <span class="hljs-literal">return</span> ord(c) - ord(<span class="hljs-string">'0'</span>)
+    <span class="hljs-keyword">else</span>:
+        <span class="hljs-literal">return</span> <span class="hljs-number">10</span> + ord(c) - ord(<span class="hljs-string">'a'</span>)
+
+<span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">"string.txt"</span>, <span class="hljs-string">"r"</span>) <span class="hljs-keyword">as</span> f:
+    <span class="hljs-keyword">string</span> = f.<span class="hljs-built_in">read</span>() <span class="hljs-comment"># Read the content of the file</span>
+
+res = <span class="hljs-string">""</span>
+<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(<span class="hljs-keyword">string</span>), <span class="hljs-number">5</span>):
+    <span class="hljs-comment"># Get the two values composing the character</span>
+    first_character = character_hex_2_dec_lowercase(<span class="hljs-keyword">string</span>[i+<span class="hljs-number">2</span>])
+    second_character = character_hex_2_dec_lowercase(<span class="hljs-keyword">string</span>[i+<span class="hljs-number">3</span>])
+
+    <span class="hljs-comment"># Get the character</span>
+    <span class="hljs-keyword">character</span> = chr(first_character * <span class="hljs-number">16</span> + second_character)
+    res += <span class="hljs-keyword">character</span>
+
+print(res)
+</code></pre>
+<p>And with this type of script we can get the flag!</p>
+<hr>
+<h3 id="based">Based</h3>
+<p>So in this challenge, we have to connect to the server and answer the question. The questions are all about bases, converting numbers to words.</p>
+<p>I decided to write a script, in python, that is gonna guess the answer to the question.</p>
+<p>First we need to <strong>connect to the server</strong>:</p>
+<p>For this I&#39;m gonna use a simple python script that use socket.</p>
+<pre><code class="lang-python">import <span class="hljs-built_in">socket</span>
+
+hostname = <span class="hljs-string">"hostname"</span>
+port = <span class="hljs-number">00000</span>
+
+def netcat(hostname, port):
+    sock = <span class="hljs-built_in">socket</span>.<span class="hljs-built_in">socket</span>(<span class="hljs-built_in">socket</span>.AF_INET, <span class="hljs-built_in">socket</span>.SOCK_STREAM)
+    sock.connect((hostname, port))
+
+    <span class="hljs-comment"># Receive Data</span>
+    data = sock.recv(<span class="hljs-number">1024</span>).decode()
+    print(<span class="hljs-string">"Received:"</span>, data)
+
+    <span class="hljs-comment"># Do things ...</span>
+
+    <span class="hljs-comment"># Send Data</span>
+    sock.sendall((<span class="hljs-built_in">result</span> + <span class="hljs-string">"\n"</span>).encode()) <span class="hljs-comment"># As it should end with "\n"</span>
+    print(<span class="hljs-string">"Sent:"</span>, <span class="hljs-built_in">result</span>)
+</code></pre>
+<p>With this script you can connect to the server, get data and send some</p>
+<p>The <strong>First</strong> question is this one (the numbers may vary):</p>
+<pre><code>Let us see how data is stored
+animation
+Please give the <span class="hljs-number">01100001</span> <span class="hljs-number">01101110</span> <span class="hljs-number">01101001</span> <span class="hljs-number">01101101</span> <span class="hljs-number">01100001</span> <span class="hljs-number">01110100</span> <span class="hljs-number">01101001</span> <span class="hljs-number">01101111</span> <span class="hljs-number">01101110</span> as a word.
+...
+you have <span class="hljs-number">45</span> seconds.....
+
+Input:
+</code></pre><p>The word is literally in the text but let&#39;s have fun with python.</p>
+<p>The script is just gonna find where the numbers are, convert each one and build the word.</p>
+<p>An exemple of script:</p>
+<pre><code class="lang-python">def solve_bin(data):
+    i = <span class="hljs-number">0</span>
+    <span class="hljs-comment"># Get to the start of the binary number</span>
+    <span class="hljs-keyword">while</span>(data[i] <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> <span class="hljs-string">"01"</span>):
+        i+=<span class="hljs-number">1</span>
+
+    <span class="hljs-literal">result</span> = <span class="hljs-string">""</span>
+    <span class="hljs-keyword">while</span>(data[i] <span class="hljs-keyword">in</span> <span class="hljs-string">"01"</span>):
+        <span class="hljs-comment"># Convert to a character</span>
+        <span class="hljs-literal">result</span> += chr(<span class="hljs-built_in">int</span>(data[i:i+<span class="hljs-number">8</span>], <span class="hljs-number">2</span>))
+        i+=<span class="hljs-number">9</span> <span class="hljs-comment"># 8 + the space</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">result</span>
+</code></pre>
+<p>From the given string, it return the corresponding word.</p>
+<p>The <strong>Second</strong> question (the numbers may vary):</p>
+<pre><code>Please give me <span class="hljs-keyword">the</span>  <span class="hljs-number">146</span> <span class="hljs-number">141</span> <span class="hljs-number">154</span> <span class="hljs-number">143</span> <span class="hljs-number">157</span> <span class="hljs-number">156</span> <span class="hljs-keyword">as</span> <span class="hljs-keyword">a</span> <span class="hljs-built_in">word</span>.
+Input:
+</code></pre><p>After few attempts we can see that there is no numbers that are over 7 =&gt; base 8</p>
+<p>Now we can write a nice script that convert from this format to the corresponding word.</p>
+<pre><code class="lang-python">def solve_8_base(data):
+    i = <span class="hljs-number">0</span>
+    <span class="hljs-comment"># Get to the start of the number</span>
+    <span class="hljs-keyword">while</span>(data[i] <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> <span class="hljs-string">"01234567"</span>):
+        i+=<span class="hljs-number">1</span>
+
+    <span class="hljs-literal">result</span> = <span class="hljs-string">""</span>
+    <span class="hljs-keyword">while</span>(data[i] <span class="hljs-keyword">in</span> <span class="hljs-string">"01234567"</span>):
+        <span class="hljs-comment"># Convert to a character</span>
+        <span class="hljs-literal">result</span> += chr(<span class="hljs-built_in">int</span>(data[i:i+<span class="hljs-number">3</span>], <span class="hljs-number">8</span>))
+        i+=<span class="hljs-number">4</span> <span class="hljs-comment"># 3 + the space</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">result</span>
+</code></pre>
+<p>Second question clear!</p>
+<p>The <strong>Third</strong> question (the numbers may vary):</p>
+<pre><code>Please give me <span class="hljs-keyword">the</span> <span class="hljs-number">6</span>d6170 <span class="hljs-keyword">as</span> <span class="hljs-keyword">a</span> <span class="hljs-built_in">word</span>.
+Input:
+</code></pre><p>It&#39;s clear that this is a word in base 16. This give us the script that follow.</p>
+<pre><code class="lang-python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">hex_2_char_l</span><span class="hljs-params">(c)</span>:</span>
+    <span class="hljs-keyword">if</span> c &lt; <span class="hljs-string">'a'</span>:
+        <span class="hljs-keyword">return</span> ord(c) - ord(<span class="hljs-string">'0'</span>)
+    <span class="hljs-keyword">else</span>:
+        <span class="hljs-keyword">return</span> <span class="hljs-number">10</span> + ord(c) - ord(<span class="hljs-string">'a'</span>)
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">solve_hexa</span><span class="hljs-params">(data)</span>:</span>
+    i = <span class="hljs-number">0</span>
+    <span class="hljs-comment"># Get to the start of the number</span>
+    <span class="hljs-keyword">while</span>(data[i] <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> <span class="hljs-string">"0123456789"</span>):
+        i+=<span class="hljs-number">1</span>
+
+    result = <span class="hljs-string">""</span>
+    <span class="hljs-keyword">while</span>(data[i] <span class="hljs-keyword">in</span> <span class="hljs-string">"0123456789"</span>):
+        <span class="hljs-comment"># Convert to a character</span>
+        result += chr(hex_2_char_l(data[i]) * <span class="hljs-number">16</span> + hex_2_char_l(data[i+<span class="hljs-number">1</span>]))
+        i+=<span class="hljs-number">2</span>
+    <span class="hljs-keyword">return</span> result
+</code></pre>
+<p>Nice!</p>
+<p>With all these pieces together the flag can be catched.</p>
+<hr>
+<h3 id="plumbing">plumbing</h3>
+<p>The first step in this challenge is to connect to the server, using <code>nc</code> this is very simple, but after connecting, you get a huge flow of data with a lot of unwanted stuff.</p>
+<p>So first, let&#39;s get the content and put it in a file, to redirect the data, use <code>&gt;</code>. The comment should look like this:</p>
+<pre><code class="lang-bash"><span class="hljs-selector-tag">nc</span> <span class="hljs-selector-tag">jupiter</span><span class="hljs-selector-class">.challenges</span><span class="hljs-selector-class">.picoctf</span><span class="hljs-selector-class">.org</span> 4427 &gt; <span class="hljs-selector-tag">flag</span><span class="hljs-selector-class">.txt</span>
+</code></pre>
+<p>With this command, we get a lot of stuff inside the <code>flag.txt</code> file. </p>
+<p>Next step is to find the flag in this file for this, just use the <code>grep</code> command. For example, use this command:</p>
+<pre><code class="lang-bash">grep <span class="hljs-_">-e</span> picoCTF flag.txt
+</code></pre>
+<p>Then you get the flag!</p>
+<hr>
+<h3 id="mus1c">mus1c</h3>
+<p>For this challenge, you have a file called <code>lyrics.txt</code> that contain, at first sight, some lyrics.</p>
+<p><strong>lyrics.txt</strong></p>
+<pre><code class="lang-rockstar">Pico's a CTFFFFFFF
+<span class="hljs-keyword">my</span> mind <span class="hljs-keyword">is</span> waitin
+It's waitin
+
+Put <span class="hljs-keyword">my</span> mind <span class="hljs-keyword">of</span> Pico <span class="hljs-keyword">into</span> This
+<span class="hljs-keyword">my</span> flag <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> found
+<span class="hljs-keyword">put</span> This <span class="hljs-keyword">into</span> <span class="hljs-keyword">my</span> flag
+<span class="hljs-keyword">put</span> <span class="hljs-keyword">my</span> flag <span class="hljs-keyword">into</span> Pico
+
+
+shout Pico
+shout Pico
+shout Pico
+
+My song's something
+<span class="hljs-keyword">put</span> Pico <span class="hljs-keyword">into</span> This
+
+Knock This down, down, down
+<span class="hljs-keyword">put</span> This <span class="hljs-keyword">into</span> CTF
+
+shout CTF
+<span class="hljs-keyword">my</span> lyric <span class="hljs-keyword">is</span> nothing
+Put This <span class="hljs-keyword">without</span> <span class="hljs-keyword">my</span> song <span class="hljs-keyword">into</span> <span class="hljs-keyword">my</span> lyric
+Knock <span class="hljs-keyword">my</span> lyric down, down, down
+
+shout <span class="hljs-keyword">my</span> lyric
+
+Put <span class="hljs-keyword">my</span> lyric <span class="hljs-keyword">into</span> This
+Put <span class="hljs-keyword">my</span> song <span class="hljs-keyword">with</span> This <span class="hljs-keyword">into</span> <span class="hljs-keyword">my</span> lyric
+Knock <span class="hljs-keyword">my</span> lyric down
+
+shout <span class="hljs-keyword">my</span> lyric
+
+Build <span class="hljs-keyword">my</span> lyric up, up ,up
+
+shout <span class="hljs-keyword">my</span> lyric
+shout Pico
+shout It
+
+Pico CTF <span class="hljs-keyword">is</span> fun
+security <span class="hljs-keyword">is</span> important
+Fun <span class="hljs-keyword">is</span> fun
+Put security <span class="hljs-keyword">with</span> fun <span class="hljs-keyword">into</span> Pico CTF
+Build Fun up
+shout fun <span class="hljs-keyword">times</span> Pico CTF
+<span class="hljs-keyword">put</span> fun <span class="hljs-keyword">times</span> Pico CTF <span class="hljs-keyword">into</span> <span class="hljs-keyword">my</span> song
+
+build <span class="hljs-keyword">it</span> up
+
+shout <span class="hljs-keyword">it</span>
+shout <span class="hljs-keyword">it</span>
+
+build <span class="hljs-keyword">it</span> up, up
+shout <span class="hljs-keyword">it</span>
+shout Pico
+</code></pre>
+<p>The hint talk about rockstar, which is (I didn&#39;t knew) a &quot;coding language&quot;. Searching on the web I found <a href="https://codewithrockstar.com/]">this</a> website that can translate rockstart code into numbers apparently...</p>
+<p>I stored the numbers in this file, <strong>rocked.txt</strong></p>
+<pre><code><span class="hljs-number">114</span>
+<span class="hljs-number">114</span>
+<span class="hljs-number">114</span>
+<span class="hljs-number">111</span>
+<span class="hljs-number">99</span>
+<span class="hljs-number">107</span>
+<span class="hljs-number">110</span>
+<span class="hljs-number">114</span>
+<span class="hljs-number">110</span>
+<span class="hljs-number">48</span>
+<span class="hljs-number">49</span>
+<span class="hljs-number">49</span>
+<span class="hljs-number">51</span>
+<span class="hljs-number">114</span>
+</code></pre><p>With this we can get all the numbers that can be now be transformed in characters:</p>
+<p>Little python code:</p>
+<pre><code class="lang-python">with <span class="hljs-keyword">open</span>(<span class="hljs-string">"rocked.txt"</span>, <span class="hljs-string">"r"</span>) <span class="hljs-keyword">as</span> <span class="hljs-keyword">f</span>:
+    <span class="hljs-built_in">values</span> = <span class="hljs-keyword">f</span>.readlines()
+
+<span class="hljs-keyword">res</span> = <span class="hljs-string">""</span>
+<span class="hljs-keyword">for</span> value in value<span class="hljs-variable">s:</span>
+    <span class="hljs-keyword">res</span> += chr(<span class="hljs-keyword">int</span>(value))
+<span class="hljs-keyword">print</span>(<span class="hljs-keyword">res</span>)
+</code></pre>
+<p>We inject this into <code>picoCTF{}</code> to finish getting the flag.</p>
+<hr>
+<h3 id="flag_shop">flag_shop</h3>
+<p>For this challenge, we got a file <code>store.c</code> that contain de source code of the script running on the remote server. To connect to the server and interact with it, just use <code>netcat</code> alias  <code>nc</code>.</p>
+<p>The source code <code>store.c</code> wait print choices and wait for an input of the user to do the choosen action, it is organized like this :</p>
+<pre><code>1. <span class="hljs-keyword">Check</span> <span class="hljs-keyword">Account</span> Balance
+└── <span class="hljs-keyword">Show</span> <span class="hljs-keyword">Account</span> Balance
+
+<span class="hljs-number">2.</span> Buy Flags
+├── <span class="hljs-number">1.</span> Buy <span class="hljs-keyword">normal</span> flags (<span class="hljs-keyword">Not</span> the <span class="hljs-built_in">real</span> one)
+│   └── Enter the desired quantity (<span class="hljs-number">900</span> per flag)
+└── <span class="hljs-number">2.</span> <span class="hljs-keyword">Get</span> the <span class="hljs-built_in">real</span> flag (<span class="hljs-keyword">Cost</span> <span class="hljs-number">100000</span>)
+
+<span class="hljs-number">3.</span> <span class="hljs-keyword">Exit</span>
+└── <span class="hljs-keyword">Exit</span> the program
+</code></pre><p>So if you choose <code>2</code> first and <code>1</code> you have to write down the numer of flag you want to buy.</p>
+<p>This whole program use the <code>int</code> variable <code>account_balance</code> to store our money.</p>
+<p>So the goal of this challenge is to have <code>account_balance</code> &gt; 100000 to get the real flag.</p>
+<p>After a quick look on the source code, we figure that the only moment <code>account_balance</code> is modified the when you buy normal flags. So this is the part we have to focus on.</p>
+<pre><code class="lang-c"><span class="hljs-keyword">if</span>(auction_choice == <span class="hljs-number">1</span>){
+    <span class="hljs-built_in">printf</span>(<span class="hljs-string">"These knockoff Flags cost 900 each, enter desired quantity\n"</span>);
+
+    <span class="hljs-keyword">int</span> number_flags = <span class="hljs-number">0</span>;
+    fflush(<span class="hljs-built_in">stdin</span>);
+    <span class="hljs-built_in">scanf</span>(<span class="hljs-string">"%d"</span>, &amp;number_flags); <span class="hljs-comment">// Enter desired quantiy</span>
+
+    <span class="hljs-keyword">if</span>(number_flags &gt; <span class="hljs-number">0</span>){ <span class="hljs-comment">// Check if it is &gt; 0</span>
+        <span class="hljs-keyword">int</span> total_cost = <span class="hljs-number">0</span>;
+        total_cost = <span class="hljs-number">900</span>*number_flags; <span class="hljs-comment">// Calculate the price</span>
+
+        <span class="hljs-built_in">printf</span>(<span class="hljs-string">"\nThe final cost is: %d\n"</span>, total_cost);
+
+        <span class="hljs-keyword">if</span>(total_cost &lt;= account_balance){ <span class="hljs-comment">// Check if you have enough money</span>
+            account_balance = account_balance - total_cost;
+            <span class="hljs-built_in">printf</span>(<span class="hljs-string">"\nYour current balance after transaction: %d\n\n"</span>, account_balance);
+        }
+        <span class="hljs-keyword">else</span>{
+            <span class="hljs-built_in">printf</span>(<span class="hljs-string">"Not enough funds to complete purchase\n"</span>);
+        }
+    }
+}
+</code></pre>
+<p>So in this part, the program is waiting for you to enter the desired quantity, it also gonna verify if this number is over 0, calculate the price of the flags, verify if you have enough money and then calculate the remaining money.</p>
+<p>So to summarize, the only way to get more money is here:</p>
+<pre><code class="lang-c"><span class="hljs-attr">account_balance</span> = account_balance - total_cost;
+</code></pre>
+<p>So if <code>- total_cost</code> &gt; 0 we gain money. And for <code>total_cost</code>  &lt; 0, <code>900*number_flags</code> need to be &lt; 0. However  <code>number_flags</code> need to be &gt; 0 enter the <code>if</code>.</p>
+<p>We have to get this situation:</p>
+<ul>
+<li><p><code>number_flag</code> &gt; 0</p>
+</li>
+<li><p><code>total_cost</code> = <code>900*number_flags</code> &lt; 0</p>
+</li>
+</ul>
+<p>To get this, are gonna play with the size of <code>int</code> type in <code>C</code>. In <code>C</code> programming language, <code>int</code> as a finite size, so if your number is too big, it gets negative.</p>
+<h4 id="-u-explanation-u-"><u>Explanation</u>:</h4>
+<p>Imagine that the <code>int</code> type as a size of 2 bytes, the number can be negative or positive, so the computer have to know the sign of the number, for that, it&#39;s gonna use the most significant bit.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">Positive</th>
+<th style="text-align:center">Negative</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><strong>Most significant bit</strong></td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">1</td>
+</tr>
+</tbody>
+</table>
+<p><u><strong>Example:</strong></u></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:center">Positive</th>
+<th style="text-align:center">Negative</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Decimal Value</strong></td>
+<td style="text-align:center">32278</td>
+<td style="text-align:center">-2</td>
+</tr>
+<tr>
+<td><strong>Bit Representation</strong></td>
+<td style="text-align:center">0111 1110 0001 0110</td>
+<td style="text-align:center">1111 1111 1111 1110</td>
+</tr>
+</tbody>
+</table>
+<p>So if we multiply <strong>32278</strong> by 2, we get this binary representation :</p>
+<p><code>32278 * 2 = 1111 1100 0010 1100 (in base 2)</code>  which is equal to <strong>-980</strong> as the most significant bit is 1 it gets negative!</p>
+<h4 id="solving-the-challenge">Solving the challenge</h4>
+<p>So if we can get <code>number_flags</code> just enough big to be &gt; 0 but multiplied by 900 it gets too big to fit in the <code>int</code> size, we can get negative numbers!</p>
+<p><strong>The <code>int</code> size is actualy 32 bits here.</strong></p>
+<p>Let&#39;s try with <strong>1073741823</strong> that is <code>0111 1111 1111 1111 1111 1111 1111 1111</code> in binary. Multiplied by 900 is <strong>966367640700</strong> that correspond to <code>1110 0000 1111 1111 1111 1111 1111 1100 0111 1100</code>, but the int size is <strong>32 BITS</strong>! So it is <code>1111 1111 1111 1111 1111 1100 0111 1100</code>, that <strong>start with 1</strong>, so it is <strong>negative</strong> and is equal to -900.</p>
+<pre><code>These knockoff <span class="hljs-keyword">Flags</span> cost <span class="hljs-number">900</span> <span class="hljs-keyword">each</span>, enter desired quantity
+<span class="hljs-number">1073741823</span>
+
+The <span class="hljs-keyword">final</span> cost <span class="hljs-keyword">is</span>: -<span class="hljs-number">900</span>
+
+Your current balance after transaction: <span class="hljs-number">2000</span>
+</code></pre><p>We can now gain money!</p>
+<p>And if we try with another numer using the same technique, <strong>1073741500</strong> for example.</p>
+<pre><code>These knockoff <span class="hljs-keyword">Flags</span> cost <span class="hljs-number">900</span> <span class="hljs-keyword">each</span>, enter desired quantity
+<span class="hljs-number">1073741500</span>
+
+The <span class="hljs-keyword">final</span> cost <span class="hljs-keyword">is</span>: -<span class="hljs-number">291600</span>
+
+Your current balance after transaction: <span class="hljs-number">292700</span>
+</code></pre><p>Nice, we get the needed money!</p>
+<p>Now let&#39;s go buy the real flag!</p>
+<hr>
+<h3 id="1_wanna_b3_a_r0ck5tar">1_wanna_b3_a_r0ck5tar</h3>
+<p>In this challenge, we have given lyrics:</p>
+<pre><code class="lang-rockstar">Rocknroll <span class="hljs-keyword">is</span> right
+Silence <span class="hljs-keyword">is</span> wrong
+A guitar <span class="hljs-keyword">is</span> a six-<span class="hljs-built_in">string</span>
+Tommy's been down
+Music <span class="hljs-keyword">is</span> a billboard-burning razzmatazz!
+Listen <span class="hljs-keyword">to</span> <span class="hljs-keyword">the</span> music
+If <span class="hljs-keyword">the</span> music <span class="hljs-keyword">is</span> a guitar
+Say <span class="hljs-string">"Keep on rocking!"</span>
+Listen <span class="hljs-keyword">to</span> <span class="hljs-keyword">the</span> rhythm
+If <span class="hljs-keyword">the</span> rhythm <span class="hljs-keyword">without</span> Music <span class="hljs-keyword">is</span> nothing
+Tommy <span class="hljs-keyword">is</span> rockin guitar
+Shout Tommy!
+Music <span class="hljs-keyword">is</span> amazing sensation
+Jamming <span class="hljs-keyword">is</span> awesome presence
+Scream Music!
+Scream Jamming!
+Tommy <span class="hljs-keyword">is</span> playing rock
+Scream Tommy!
+They are dazzled audiences
+Shout <span class="hljs-keyword">it</span>!
+Rock <span class="hljs-keyword">is</span> electric heaven
+Scream <span class="hljs-keyword">it</span>!
+Tommy <span class="hljs-keyword">is</span> jukebox god
+Say <span class="hljs-keyword">it</span>!
+Break <span class="hljs-keyword">it</span> down
+Shout <span class="hljs-string">"Bring on the rock!"</span>
+Else Whisper <span class="hljs-string">"That ain't it, Chief"</span>
+Break <span class="hljs-keyword">it</span> down
+</code></pre>
+<p>These lyrics are in a coding language called Rockstar. After running this script on <a href="https://web.archive.org/web/20190522020843/https://codewithrockstar.com/online">codewithrockstar.com</a>, using web.archive.org because the language apparently changed, we find out that we have to enter inputs into a field and sending anything doesn&#39;t work. So we have to understand the Rockstar code a little.</p>
+<p>After a quick view on the <a href="https://codewithrockstar.com/docs">Rockstar documentation</a> we find out that lines with <code>... is ...</code> is like defining a variable, also that we can print some text using <code>Scream</code> or other equivalent keywords. The keywords <code>listen</code> is the one that waits for an input.</p>
+<p>So the first step to understand how Rockstar works is to enter in the <code>If</code> condition following:</p>
+<pre><code class="lang-rockstar"><span class="hljs-keyword">If</span> the music <span class="hljs-keyword">is</span> a guitar
+Say <span class="hljs-string">"Keep on rocking!"</span>
+</code></pre>
+<p>So <code>the music</code> is our input and it check if it is <code>a guitar</code>, to know what the <code>a guitar</code> is, just <code>Scream</code> it!</p>
+<pre><code class="lang-rockstar"><span class="hljs-bullet">...
+</span>A guitar is a six-string
+<span class="hljs-bullet">...
+</span><span class="hljs-section">Scream a guitar
+---------------</span>
+136
+</code></pre>
+<p>Nice, we now know what our first input is supposed to be!</p>
+<p>Now there is a second <code>If</code> condition:</p>
+<pre><code class="lang-rockstar"><span class="hljs-keyword">If</span> the rhythm without Music <span class="hljs-keyword">is</span> <span class="hljs-literal">nothing</span>
+</code></pre>
+<p>So, looking the documentation, <code>without</code> is minus and <code>nothing</code> is equivalent to NULL and 0.</p>
+<p>We know that our second input as to be equal to <code>Music</code>. And as the first step, if you don&#39;t know <code>Scream</code> it!</p>
+<pre><code class="lang-rockstar"><span class="hljs-bullet">...
+</span>Music is a billboard-burning razzmatazz!
+<span class="hljs-bullet">...
+</span><span class="hljs-section">Scream Music
+---------------</span>
+1970
+</code></pre>
+<p>We got our second input!</p>
+<p>The code can now be re-run, write the inputs, and you got this:</p>
+<pre><code>Keep on rocking!
+<span class="hljs-number">66</span>
+<span class="hljs-number">79</span>
+<span class="hljs-number">78</span>
+<span class="hljs-number">74</span>
+<span class="hljs-number">79</span>
+<span class="hljs-number">86</span>
+<span class="hljs-number">73</span>
+</code></pre><p>If we take all our numbers here and convert them into a word, we can now submit our flag!</p>
+<p>I&#39;ve made a simple python script for this, just put the numbers in a file <code>rocked.txt</code> and then run the script:</p>
+<pre><code class="lang-python">with <span class="hljs-keyword">open</span>(<span class="hljs-string">"rocked.txt"</span>, <span class="hljs-string">"r"</span>) <span class="hljs-keyword">as</span> <span class="hljs-keyword">f</span>:
+    <span class="hljs-built_in">values</span> = <span class="hljs-keyword">f</span>.readlines()
+
+<span class="hljs-keyword">res</span> = <span class="hljs-string">""</span>
+<span class="hljs-keyword">for</span> value in value<span class="hljs-variable">s:</span>
+    <span class="hljs-keyword">res</span> += chr(<span class="hljs-keyword">int</span>(value))
+<span class="hljs-keyword">print</span>(<span class="hljs-keyword">res</span>)
+</code></pre>
+<p>Inject it into <strong>picoCTF{}</strong> and you got it!</p>
+<hr>
+<h3 id="useless">useless</h3>
+<p>In this challenge we have to connect by ssh to the remote server, and there is just one interesting file <code>useless</code>, a shell script that can be executed. Let&#39;s see what&#39;s inside:</p>
+<p><strong>useless</strong></p>
+<pre><code class="lang-shell"><span class="hljs-meta">#!/bin/bash</span>
+<span class="hljs-comment"># Basic mathematical operations via command-line arguments</span>
+
+<span class="hljs-keyword">if</span> [ <span class="hljs-variable">$#</span> != 3 ]
+<span class="hljs-keyword">then</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"Read the code first"</span>
+<span class="hljs-keyword">else</span>
+    <span class="hljs-keyword">if</span> [[ <span class="hljs-string">"<span class="hljs-variable">$1</span>"</span> == <span class="hljs-string">"add"</span> ]]
+    <span class="hljs-keyword">then</span>
+      sum=$(( <span class="hljs-variable">$2</span> + <span class="hljs-variable">$3</span> ))
+      <span class="hljs-built_in">echo</span> <span class="hljs-string">"The Sum is: <span class="hljs-variable">$sum</span>"</span>
+
+    <span class="hljs-keyword">elif</span> [[ <span class="hljs-string">"<span class="hljs-variable">$1</span>"</span> == <span class="hljs-string">"sub"</span> ]]
+    <span class="hljs-keyword">then</span>
+      sub=$(( <span class="hljs-variable">$2</span> - <span class="hljs-variable">$3</span> ))
+      <span class="hljs-built_in">echo</span> <span class="hljs-string">"The Substract is: <span class="hljs-variable">$sub</span>"</span>
+
+    <span class="hljs-keyword">elif</span> [[ <span class="hljs-string">"<span class="hljs-variable">$1</span>"</span> == <span class="hljs-string">"div"</span> ]]
+    <span class="hljs-keyword">then</span>
+      div=$(( <span class="hljs-variable">$2</span> / <span class="hljs-variable">$3</span> ))
+      <span class="hljs-built_in">echo</span> <span class="hljs-string">"The quotient is: <span class="hljs-variable">$div</span>"</span>
+
+    <span class="hljs-keyword">elif</span> [[ <span class="hljs-string">"<span class="hljs-variable">$1</span>"</span> == <span class="hljs-string">"mul"</span> ]]
+    <span class="hljs-keyword">then</span>
+      mul=$(( <span class="hljs-variable">$2</span> * <span class="hljs-variable">$3</span> ))
+      <span class="hljs-built_in">echo</span> <span class="hljs-string">"The product is: <span class="hljs-variable">$mul</span>"</span>
+
+    <span class="hljs-keyword">else</span>
+      <span class="hljs-built_in">echo</span> <span class="hljs-string">"Read the manual"</span>
+
+    <span class="hljs-keyword">fi</span>
+<span class="hljs-keyword">fi</span>
+</code></pre>
+<p>It say &quot;<strong><em>Read the manual</em></strong>&quot;, let&#39;s read it with <code>man</code>.</p>
+<pre><code class="lang-bash">picoplayer@challenge:~$ man useless
+useless
+     useless, — This is <span class="hljs-keyword">a</span> simple calculator script
+
+SYNOPSIS
+     useless, [<span class="hljs-built_in">add</span> sub mul <span class="hljs-keyword">div</span>] number1 number2
+
+DESCRIPTION
+     Use <span class="hljs-keyword">the</span> useless, macro <span class="hljs-built_in">to</span> make simple calulations like addi‐
+     tion,subtraction, multiplication <span class="hljs-keyword">and</span> division.
+
+Examples
+     ./useless <span class="hljs-built_in">add</span> <span class="hljs-number">1</span> <span class="hljs-number">2</span>
+       This will <span class="hljs-built_in">add</span> <span class="hljs-number">1</span> <span class="hljs-keyword">and</span> <span class="hljs-number">2</span> <span class="hljs-keyword">and</span> <span class="hljs-literal">return</span> <span class="hljs-number">3</span>
+
+     ./useless mul <span class="hljs-number">2</span> <span class="hljs-number">3</span>
+       This will <span class="hljs-literal">return</span> <span class="hljs-number">6</span> <span class="hljs-keyword">as</span> <span class="hljs-keyword">a</span> product <span class="hljs-keyword">of</span> <span class="hljs-number">2</span> <span class="hljs-keyword">and</span> <span class="hljs-number">3</span>
+
+     ./useless <span class="hljs-keyword">div</span> <span class="hljs-number">6</span> <span class="hljs-number">3</span>
+       This will <span class="hljs-literal">return</span> <span class="hljs-number">2</span> <span class="hljs-keyword">as</span> <span class="hljs-keyword">a</span> quotient <span class="hljs-keyword">of</span> <span class="hljs-number">6</span> <span class="hljs-keyword">and</span> <span class="hljs-number">3</span>
+
+     ./useless sub <span class="hljs-number">6</span> <span class="hljs-number">5</span>
+       This will <span class="hljs-literal">return</span> <span class="hljs-number">1</span> <span class="hljs-keyword">as</span> <span class="hljs-keyword">a</span> remainder <span class="hljs-keyword">of</span> substraction <span class="hljs-keyword">of</span> <span class="hljs-number">5</span> <span class="hljs-built_in">from</span> <span class="hljs-number">6</span>
+
+Authors
+     This script was designed <span class="hljs-keyword">and</span> developed <span class="hljs-keyword">by</span> Cylab Africa
+
+     The flag :)
+</code></pre>
+<p>We got the flag!</p>
+<hr>
+<h3 id="special">Special</h3>
+<p>In this challenge we have to connect by ssh to the remote server, the shell looks very strange and when you try to use commands it change the command into words (to avoid spelling mistakes), even if it can be very usefull, it is not good for use since we have to use commands to do things.</p>
+<p>For example, using <code>ls</code> give this:</p>
+<pre><code class="lang-bash">Special$ ls
+<span class="hljs-keyword">Is</span>
+sh: <span class="hljs-number">1</span>: <span class="hljs-keyword">Is</span>: <span class="hljs-keyword">not</span> found
+</code></pre>
+<p>First thing is to find how we can use commands, let&#39;s try with an absolute path:</p>
+<pre><code class="lang-bash">Special$ /bin/ls
+Absolutely <span class="hljs-keyword">not</span> paths like <span class="hljs-keyword">that</span>, please!
+</code></pre>
+<p>It doesn&#39;t work, so let&#39;s try with a relative path:</p>
+<pre><code class="lang-shell">Special$ ../../bin/ls
+../../bin/ls
+blargh
+</code></pre>
+<p>Nice, we can use commands and there is a directory called <code>blargh</code> here, let&#39;s see what&#39;s inside. And since <code>blargh</code> is not a real word, don&#39;t forget to use a relative path.</p>
+<pre><code class="lang-shell"><span class="hljs-symbol">Special$</span> ../../<span class="hljs-keyword">bin/ls </span>./<span class="hljs-keyword">blargh
+</span><span class="hljs-symbol">..</span>/../<span class="hljs-keyword">bin/ls </span>./<span class="hljs-keyword">blargh
+</span><span class="hljs-symbol">flag.txt</span>
+</code></pre>
+<p>We now got the file <code>flag.txt</code>, let&#39;s use <code>cat</code> to look at the content of the file.</p>
+<pre><code class="lang-shell">Special$ ..<span class="hljs-regexp">/../</span>bin<span class="hljs-regexp">/cat ./</span>blargh/flag.txt
+..<span class="hljs-regexp">/../</span>bin<span class="hljs-regexp">/cat ./</span>blargh/flag.txt
+The <span class="hljs-string">Flag :</span>)
+</code></pre>
+<p>We now got the flag!</p>
+<hr>
+<h3 id="specialer">Specialer</h3>
+<p>The is the next challenge after <strong>Special</strong>, first, you have to connect by ssh to the remote server. </p>
+<p>There is a strange shell that cannot execute a lot of commands.</p>
+<pre><code class="lang-shell">Specialer$ <span class="hljs-keyword">ls</span>
+-bash: <span class="hljs-keyword">l</span><span class="hljs-variable">s:</span> <span class="hljs-keyword">command</span> not found
+</code></pre>
+<p>But some still work:</p>
+<pre><code class="lang-shell">Specialer$ <span class="hljs-built_in">echo</span> <span class="hljs-string">"Hello"</span>
+Hello
+Specialer$ <span class="hljs-built_in">pwd</span>
+/home/ctf-player
+</code></pre>
+<p>Since <code>echo</code> is working, we now can display the files and directories using <code>echo *</code>:</p>
+<pre><code class="lang-shell">Specialer$ <span class="hljs-keyword">echo</span> *
+abra ala <span class="hljs-keyword">sim</span>
+</code></pre>
+<p>Now let&#39;s look at the files inside these directories:</p>
+<pre><code class="lang-shell">Specialer$ <span class="hljs-keyword">echo</span> abra/*
+abra/cadabra.txt abra/cadaniel.txt
+Specialer$ <span class="hljs-keyword">echo</span> ala/*
+ala/kazam.txt ala/<span class="hljs-keyword">mode</span>.txt
+Specialer$ <span class="hljs-keyword">echo</span> <span class="hljs-keyword">sim</span>/*
+<span class="hljs-keyword">sim</span>/city.txt <span class="hljs-keyword">sim</span>/salabim.txt
+</code></pre>
+<p>Now we hope that the flag is here, because after looking around, there is no other interesting files on this remote server.</p>
+<p>To look inside a file using <code>echo</code>, use <code>echo &quot;$(&lt;file.txt)&quot;</code> (I found that on internet), the challenge can now be solved.</p>
+<pre><code class="lang-shell">sim/city.txt sim/salabim.txt
+Specialer$ echo <span class="hljs-string">"<span class="hljs-subst">$(&lt;abra/cadabra.txt)</span>"</span>
+<span class="hljs-built_in">Nothing</span> up my sleeve!
+Specialer$ echo <span class="hljs-string">"<span class="hljs-subst">$(&lt;abra/cadaniel.txt)</span>"</span>
+Yes, <span class="hljs-literal">I</span> did it! <span class="hljs-literal">I</span> really did it! <span class="hljs-literal">I</span>'m a <span class="hljs-literal">true</span> wizard!
+Specialer$ echo <span class="hljs-string">"<span class="hljs-subst">$(&lt;ala/kazam.txt)</span>"</span>
+<span class="hljs-keyword">return</span> <span class="hljs-number">0</span> The Flag :)
+</code></pre>
+<p>Nice, challenge finished!</p>
+<hr>
